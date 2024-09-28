@@ -23,9 +23,18 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import messaging from '@react-native-firebase/messaging';
+import {
+  Avatar_user,
+  Passkey,
+  Logos,
+  Showeyes,
+  Hideeys,
+  Google,
+  Facebook,
+} from '../../assets/svg/svgfile.js';
 GoogleSignin.configure({
   client_id:
-    '696940661197-ci281q1klssq9efmlaio44f61kht36ru.apps.googleusercontent.com',
+    '696940661197-03ljc2ptvfmdghjiun0gbfc1l8cdmnep.apps.googleusercontent.com',
 });
 const Login = ({navigation}) => {
   // const {datas, setData} = useContext([]);
@@ -82,6 +91,7 @@ const Login = ({navigation}) => {
   };
   const [eye, setEys] = useState(false);
   const anhien = () => {
+    console.log('anhien');
     setHienthi(!hienthi);
   };
   const SiginWithGg = async () => {
@@ -89,12 +99,10 @@ const Login = ({navigation}) => {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
-
       await GoogleSignin.hasPlayServices();
       const userInfor = await GoogleSignin.signIn();
-
-      const gguser = userInfor.user;
-      console.log(gguser, 'user');
+      const gguser = userInfor.data;
+      console.log(gguser);
       const authStatus = await messaging().requestPermission();
       if (
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -103,40 +111,40 @@ const Login = ({navigation}) => {
         const fcmtoken = await AsyncStorage.getItem('fcmtoken');
         console.log(fcmtoken, 'fcmtoken');
         if (!fcmtoken) {
-          // const token = await messaging().getToken();
-          // let avatar = gguser.photo;
-          // if (gguser.photo == null) {
-          //   avatar =
-          //     'https://cdn.thoitiet247.edu.vn/wp-content/uploads/2024/04/nhung-hinh-anh-girl-xinh-de-thuong.webp';
-          // }
-          // const user = {
-          //   email: gguser.email,
-          //   password: gguser.id,
-          //   name: gguser.name,
-          //   avatar: avatar,
-          //   fcmtoken: [token],
-          // };
-          // const {data} = await axios.post(
-          //   `${path}/api/user/siginGoogle`,
-          //   user,
-          //   {
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //     },
-          //   },
-          // );
-          // console.log(data, 'giá strij dâtta');
-          // await AsyncStorage.setItem('data', JSON.stringify(data));
-          // await AsyncStorage.setItem(
-          //   'accessToken',
-          //   JSON.stringify(data.ascesstoken),
-          // );
-          // await AsyncStorage.setItem(
-          //   'refreshToken',
-          //   JSON.stringify(data.refreshtoken),
-          // );
-          // await setData(JSON.stringify(data));
-          // navigation.navigate('Home');
+          const token = await messaging().getToken();
+          let avatar = gguser.photo;
+          if (gguser.photo == null) {
+            avatar =
+              'https://cdn.thoitiet247.edu.vn/wp-content/uploads/2024/04/nhung-hinh-anh-girl-xinh-de-thuong.webp';
+          }
+          const user = {
+            email: gguser.email,
+            password: gguser.id,
+            name: gguser.name,
+            avatar: avatar,
+            fcmtoken: [token],
+          };
+          const {data} = await axios.post(
+            `${path}/api/user/siginGoogle`,
+            user,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+          console.log(data, 'giá strij dâtta');
+          await AsyncStorage.setItem('data', JSON.stringify(data));
+          await AsyncStorage.setItem(
+            'accessToken',
+            JSON.stringify(data.ascesstoken),
+          );
+          await AsyncStorage.setItem(
+            'refreshToken',
+            JSON.stringify(data.refreshtoken),
+          );
+          await setData(JSON.stringify(data));
+          navigation.navigate('Home');
         }
       }
     } catch (error) {
@@ -151,7 +159,10 @@ const Login = ({navigation}) => {
   return (
     <ScrollView style={[styles.container]}>
       <View style={styles.header}>
-        <Text style={[styles.font, {color: 'black'}]}>Đăng Nhập Tài Khoản</Text>
+        <Logos />
+        <Text style={[{color: 'black', fontSize: 24, fontWeight: 'bold'}]}>
+          Đăng Nhập Tài Khoản
+        </Text>
       </View>
       <View style={styles.body}>
         <View style={styles.bodycon}>
@@ -161,9 +172,13 @@ const Login = ({navigation}) => {
               styles.IuserName,
               {borderRadius: 24, borderWidth: 1, borderColor: 'black'},
             ]}>
+            <Avatar_user />
             <TextInput
               placeholder="Enter email or phone"
-              style={[styles.textinput]}
+              style={[
+                styles.textinput,
+                {fontFamily: 'Fredoka-Bold.ttf', placeholderTextColor: 'pink'},
+              ]}
               value={emailphone}
               onChangeText={emailphone => setName(emailphone)}
               keyboardType="email-address"
@@ -173,30 +188,42 @@ const Login = ({navigation}) => {
           <View
             style={[
               styles.IuserName,
-              {borderRadius: 24, borderWidth: 1, borderColor: 'black'},
+              {
+                borderRadius: 24,
+                borderWidth: 1,
+                borderColor: 'black',
+                paddingHorizontal: '2%',
+              },
             ]}>
+            <Passkey />
             <TextInput
               placeholder="Enter password"
-              style={[styles.textinput]}
+              style={[styles.textinput, {fontFamily: 'Fredoka-Bold'}]}
               secureTextEntry={hienthi}
               titleAler="vui long nhap thong tin chnh sac"
               value={matkhau}
               onChangeText={matkhau => {
                 setPass(matkhau);
                 if (matkhau != '') {
+                  console.log('jajaaj');
                   setEys(true);
                 } else {
                   setEys(false);
                 }
               }}
             />
-            {eye == true && (
+            {eye === true && (
               <TouchableOpacity onPress={anhien}>
-                <Text>hienthi</Text>
+                {hienthi ? <Showeyes /> : <Hideeys />}
               </TouchableOpacity>
             )}
           </View>
-
+          <TouchableOpacity
+            style={{justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
+            <Text style={{color: color.black, fontWeight: 'bold'}}>
+              Quyên mật khẩu
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.button,
@@ -216,42 +243,75 @@ const Login = ({navigation}) => {
               Login
             </Text>
           </TouchableOpacity>
-          <View>
-            <Text>
-              Banj chuaw co taif khoan  
-              <Text style={{color: 'green'}}>banj cmuown dang kys</Text>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+              marginTop: '5%',
+            }}>
+            <Text style={{color: color.black, fontWeight: '400'}}>
+              Bạn chưa có tài khoản
+              <Text style={{color: 'green'}}> ? Đăng ký ngay</Text>
             </Text>
           </View>
         </View>
       </View>
       <View
         style={{
-          width: '100%',
+          width: '80%',
+          alignSelf: 'center',
+          flexDirection: 'row',
+          marginBottom: '5%',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <View
+          style={{
+            width: '40%',
+            height: 2,
+            flexDirection: 'row',
+
+            backgroundColor: color.black,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}></View>
+        <Text style={{alignSelf: 'center', color: color.black}}>Hoặc</Text>
+        <View
+          style={{
+            width: '40%',
+            backgroundColor: color.black,
+            height: 2,
+            alignSelf: 'center',
+            flexDirection: 'row',
+          }}></View>
+      </View>
+      <View
+        style={{
+          width: '50%',
           height: '10%',
           flexDirection: 'row',
           justifyContent: 'space-around',
           alignItems: 'center',
+          alignSelf: 'center',
         }}>
         <TouchableOpacity
           onPress={SiginWithGg}
           style={{
-            width: '40%',
-            height: '50%',
-            backgroundColor: 'pink',
             justifyContent: 'center',
-            borderRadius: 20,
+            flexDirection: 'row',
+
+            alignItems: 'center',
           }}>
-          <Text style={{textAlign: 'center'}}>Login with gg</Text>
+          <Google />
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            width: '40%',
-            height: '50%',
-            backgroundColor: 'blue',
-            justifyContent: 'center',
-            borderRadius: 20,
+            flexDirection: 'row',
+            alignContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'center',
           }}>
-          <Text style={{textAlign: 'center'}}>Login with fb</Text>
+          <Facebook />
         </TouchableOpacity>
       </View>
       <View style={styles.flooter}></View>
