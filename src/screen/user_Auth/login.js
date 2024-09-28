@@ -170,7 +170,12 @@ const Login = ({navigation}) => {
           <View
             style={[
               styles.IuserName,
-              {borderRadius: 24, borderWidth: 1, borderColor: 'black'},
+              {
+                borderRadius: 24,
+                borderWidth: 1,
+                borderColor: 'black',
+                paddingLeft: '2%',
+              },
             ]}>
             <Avatar_user />
             <TextInput
@@ -251,7 +256,12 @@ const Login = ({navigation}) => {
             }}>
             <Text style={{color: color.black, fontWeight: '400'}}>
               Bạn chưa có tài khoản
-              <Text style={{color: 'green'}}> ? Đăng ký ngay</Text>
+              <Text
+                onPress={() => {
+                  navigation.navigate('Register');
+                 }}
+                
+                style={{ color: 'green' }}> ? Đăng ký ngay</Text>
             </Text>
           </View>
         </View>

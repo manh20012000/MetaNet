@@ -4,7 +4,7 @@ import {color} from '../../assets/color/color';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: color.pink,
+    backgroundColor: color.backgroudcolor,
   },
   header: {
     justifyContent: 'space-around',
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     width: '80%',
     fontWeight: 'bold',
-    placeholderTextColor: 'black',
+    placeholderTextColor: color.black,
     color: color.black,
   },
   eye: {
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 40,
-    backgroundColor: 'pink',
+    backgroundColor: color.backgroudcolor,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 5,

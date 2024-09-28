@@ -2,6 +2,6 @@ export const color = {
   black: 'black',
   white: 'white',
   green: 'green',
-  pink: 'pink',
+  backgroudcolor: '#f8dbd0',
   gray: '#777777',
 };
