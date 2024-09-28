@@ -2,11 +2,11 @@ import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Login from '../screen/login.js';
-import Register from '../screen/register.js';
+import Login from '../screen/user_Auth/login.js';
+import Register from '../screen/user_Auth/register.js';
 
 const Stack = createNativeStackNavigator();
-const navigation=()=> {
+const navigation = () => {
   return (
     <NavigationContainer
       style={{
@@ -22,6 +22,6 @@ const navigation=()=> {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
-export default navigation
+};
+export default navigation;
 const styles = StyleSheet.create({});
