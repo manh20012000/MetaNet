@@ -258,10 +258,13 @@ const Login = ({navigation}) => {
               Bạn chưa có tài khoản
               <Text
                 onPress={() => {
+                  console.log('dbsjdsjn');
                   navigation.navigate('Register');
-                 }}
-                
-                style={{ color: 'green' }}> ? Đăng ký ngay</Text>
+                }}
+                style={{color: 'green'}}>
+                {' '}
+                ? Đăng ký ngay
+              </Text>
             </Text>
           </View>
         </View>

@@ -1,14 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
-// import authSlice from "./Reducer/auth.slice.js";
-// import { commentParentVideo } from "./Reducer/CommentVideoParent.js";
-// // import socketSlice  from "./Reducer/SocketConnection.js";
-// import StatusUser from "./Reducer/StatusUser.js";
+import {configureStore} from '@reduxjs/toolkit';
+import authSlice from './Reducer/auth.slice.js';
+import Color_app from './Reducer/color_App.js';
 
 export const store = configureStore({
   reducer: {
-    // auth: authSlice,
-   
-    // // Socket:socketSlice ,
-
+    auth: authSlice,
+    colorApp: Color_app,
   },
 });

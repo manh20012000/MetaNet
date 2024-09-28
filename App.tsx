@@ -24,6 +24,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {store} from './src/Redux_Toolkit/Store';
+import {Provider} from 'react-redux';
 // import { SvgBack } from './assets/svg/svgfile';
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -38,13 +40,15 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      {/* <StatusBar
+    <Provider store={store}>
+      <SafeAreaView style={{flex: 1}}>
+        {/* <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       /> */}
-      <Navigation />
-    </SafeAreaView>
+        <Navigation />
+      </SafeAreaView>
+    </Provider>
   );
 }
 
