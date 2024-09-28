@@ -13,7 +13,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import path from '../../util/path_confige.js';
 import {HandlerNotification} from '../../util/checking_fcmtoken.js';
-import {color} from '../../assets/color/color.js';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   GoogleSignin,
   GoogleSigninButton,
@@ -37,6 +37,7 @@ GoogleSignin.configure({
     '696940661197-03ljc2ptvfmdghjiun0gbfc1l8cdmnep.apps.googleusercontent.com',
 });
 const Login = ({navigation}) => {
+  const color = useSelector(state => state.colorApp.value);
   // const {datas, setData} = useContext([]);
   const [emailphone, setName] = useState('');
   const [matkhau, setPass] = useState('');
