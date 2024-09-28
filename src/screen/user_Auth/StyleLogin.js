@@ -4,12 +4,13 @@ import {color} from '../../assets/color/color';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: color.pink,
+    backgroundColor: color.backgroudcolor,
   },
   header: {
-    flex: 0.2,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
+    marginTop: '10%',
+    height: '25%',
   },
   font: {
     fontSize: 40,
@@ -27,18 +28,20 @@ const styles = StyleSheet.create({
     height: '20%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     borderRadius: 40,
     borderWidth: 1,
     marginVertical: '2%',
     borderColor: color.gray,
-    backgroundColor: color.white,
   },
 
   textinput: {
-    marginLeft: '3%',
-    fontSize: 13,
-    width: '100%',
+    marginLeft: '2%',
+    fontSize: 15,
+    width: '80%',
+    fontWeight: 'bold',
+    placeholderTextColor: color.black,
+    color: color.black,
   },
   eye: {
     marginLeft: 50,
@@ -70,7 +73,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 40,
-    backgroundColor: 'pink',
+    backgroundColor: color.backgroudcolor,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 5,
