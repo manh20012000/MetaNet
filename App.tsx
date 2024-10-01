@@ -26,7 +26,7 @@ import {
 // } from 'react-native/Libraries/NewAppScreen';
 import {store} from './src/Redux_Toolkit/Store';
 import {Provider} from 'react-redux';
-import Navigation from './src/navigation/Navigation.js';
+import Navigation from './src/navigation/navigation.js';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 function App(): React.JSX.Element {
