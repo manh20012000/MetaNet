@@ -8,8 +8,8 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
+  // SafeAreaView,
+  // ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -17,59 +17,54 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// import {
+//   Colors,
+//   DebugInstructions,
+//   Header,
+//   LearnMoreLinks,
+//   ReloadInstructions,
+// } from 'react-native/Libraries/NewAppScreen';
 import {store} from './src/Redux_Toolkit/Store';
 import {Provider} from 'react-redux';
-// import { SvgBack } from './assets/svg/svgfile';
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-import Navigation from './src/navigation/navigation';
+import Navigation from './src/navigation/Navigation.js';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
     <Provider store={store}>
-      <SafeAreaView style={{flex: 1}}>
-        {/* <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      /> */}
+      <SafeAreaProvider style={{flex: 1}}>
+        <StatusBar
+          // barStyle={'transparent'}
+          translucent={true}
+          hidden={false}
+          //  backgroundColor={'rgba(233,233,233,0.9)'}
+          backgroundColor={'transparent'}
+        />
+
         <Navigation />
-      </SafeAreaView>
+      </SafeAreaProvider>
     </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+// const styles = StyleSheet.create({
+//   sectionContainer: {
+//     marginTop: 32,
+//     paddingHorizontal: 24,
+//   },
+//   sectionTitle: {
+//     fontSize: 24,
+//     fontWeight: '600',
+//   },
+//   sectionDescription: {
+//     marginTop: 8,
+//     fontSize: 18,
+//     fontWeight: '400',
+//   },
+//   highlight: {
+//     fontWeight: '700',
+//   },
+// });
 
 export default App;
 // function Section({children, title}: SectionProps): React.JSX.Element {

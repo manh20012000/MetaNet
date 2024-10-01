@@ -46,7 +46,7 @@ export class HandlerNotification {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: auth.accesstoken,
+            authorization: auth.accesstoken,
             'Refresh-Token': auth.refreshtoken,
           },
         },

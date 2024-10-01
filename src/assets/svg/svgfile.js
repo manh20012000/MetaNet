@@ -5,9 +5,16 @@ import Showeyes from '../svg/showeys.svg';
 import Hideeys from '../svg/hideeys.svg';
 import Google from '../svg/googole.svg';
 import Facebook from '../svg/facebook.svg';
-import Logos from '../svg/logo.svg'
+import Logos from '../svg/logo.svg';
+import Backsvg from '../svg/bac.svg';
+import Phone from '../svg/phone.svg';
+import Email from '../svg/email.svg';
+import Pass2 from '../svg/passwordkey.svg';
 export {
-  SvgBack,
+  SvgBack,Pass2,
+  Phone,
+  Email,
+  Backsvg,
   Avatar_user,
   Passkey,
   Showeyes,
