@@ -1,10 +1,10 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import Notification_screen from '../screen/Notification/Notification_screen';
-import Home_screen from '../screen/Home/Home_screen';
-import User_profile from '../screen/User/User_profile';
-import Media_screen from '../screen/Add_Media/Media_screen';
-import Watch from '../screen/Video_Watch/Watch';
+import Notification_screen from '../Screen/Notification/Notification_screen';
+import Home_screen from '../Screen/Home/Home_screen';
+import User_profile from '../Screen/User/User_profile';
+import Media_screen from '../Screen/Add_Media/Media_screen';
+import Watch from '../Screen/Video_Watch/Watch';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
