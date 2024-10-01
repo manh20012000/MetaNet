@@ -227,6 +227,9 @@ const Login = ({navigation}) => {
             )}
           </View>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Find_user');
+            }}
             style={{justifyContent: 'flex-end', alignSelf: 'flex-end'}}>
             <Text style={{color: color.black, fontWeight: 'bold'}}>
               Quyên mật khẩu
