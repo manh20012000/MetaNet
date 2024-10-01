@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -26,28 +26,22 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import {store} from './src/Redux_Toolkit/Store';
 import {Provider} from 'react-redux';
-// import { SvgBack } from './assets/svg/svgfile';
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-import Navigation from './src/navigation/navigation';
+import Navigation from './src/navigation/navigation.js';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+  
   return (
     <Provider store={store}>
-      <SafeAreaView style={{flex: 1}}>
-        {/* <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      /> */}
+      <SafeAreaProvider style={{flex: 1}}>
+        <StatusBar
+          barStyle={'light-content'}
+          translucent={true}
+          //  backgroundColor={'rgba(233,233,233,0.9)'}
+          // backgroundColor={'#fff'}
+        />
         <Navigation />
-      </SafeAreaView>
+      </SafeAreaProvider>
     </Provider>
   );
 }

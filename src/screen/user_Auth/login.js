@@ -75,7 +75,7 @@ const Login = ({navigation}) => {
           JSON.stringify(data.refreshtoken),
         );
         const getdata = await AsyncStorage.getItem('data');
-        await setData(getdata);
+
         navigation.navigate('Home');
         // setPass('');
         // setName('');
@@ -144,7 +144,7 @@ const Login = ({navigation}) => {
             'refreshToken',
             JSON.stringify(data.refreshtoken),
           );
-          await setData(JSON.stringify(data));
+          // await setData(JSON.stringify(data));
           navigation.navigate('Home');
         }
       }
@@ -159,7 +159,7 @@ const Login = ({navigation}) => {
   };
   return (
     <ScrollView style={[styles.container]}>
-      <View style={styles.header}>
+      <View style={[styles.header]}>
         <Logos />
         <Text style={[{color: 'black', fontSize: 24, fontWeight: 'bold'}]}>
           Đăng Nhập Tài Khoản
@@ -180,6 +180,7 @@ const Login = ({navigation}) => {
             ]}>
             <Avatar_user />
             <TextInput
+              placeholderTextColor={color.gray}
               placeholder="Enter email or phone"
               style={[
                 styles.textinput,
@@ -203,6 +204,7 @@ const Login = ({navigation}) => {
             ]}>
             <Passkey />
             <TextInput
+              placeholderTextColor={color.gray}
               placeholder="Enter password"
               style={[styles.textinput, {fontFamily: 'Fredoka-Bold'}]}
               secureTextEntry={hienthi}
@@ -258,6 +260,9 @@ const Login = ({navigation}) => {
             <Text style={{color: color.black, fontWeight: '400'}}>
               Bạn chưa có tài khoản
               <Text
+                onMagicTap={() => {
+                  console.log('sjndscnjsdn');
+                }}
                 onPress={() => {
                   console.log('dbsjdsjn');
                   navigation.navigate('Register');

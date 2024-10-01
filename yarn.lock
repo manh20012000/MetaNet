@@ -2946,6 +2946,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-picker/picker@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "@react-native-picker/picker@npm:2.8.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/f212a1cbd951e81a983fba1eb6171cf4db05590cba86522489ad14f137c7faec1ed4d73fde61613ba0a93394370f7b1294218bb9e5eae2a5a0cd7c6de955af3c
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:0.75.3":
   version: 0.75.3
   resolution: "@react-native/assets-registry@npm:0.75.3"
@@ -3644,16 +3654,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 22.7.3
-  resolution: "@types/node@npm:22.7.3"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/0e579813528b0370454337a952f43b792cd12731e10fdca0fdb627158e980c1219bba99e9048c134b6a19325d817016059afe016ccd372326c838a1b85a51574
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0":
   version: 22.7.4
   resolution: "@types/node@npm:22.7.4"
   dependencies:
@@ -3698,12 +3699,12 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*, @types/react@npm:^18.2.6":
-  version: 18.3.9
-  resolution: "@types/react@npm:18.3.9"
+  version: 18.3.10
+  resolution: "@types/react@npm:18.3.10"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/a92b8e061d0c833e096254782c56a802316593f4a907fb834b557cabe848a0829b9eb6056404ea239eb4d5ec5ac7b7724309761516c0a7a277916fa04dd4f805
+  checksum: 10c0/f5be1de1b0331c1fdb33d577f4cf7f1b949d4bded5347b2351a537f03c51dade5be115e21b161dcf1b37061954d320f6a0bdf8d7b70e24eda51071fdd614383d
   languageName: node
   linkType: hard
 
@@ -3954,6 +3955,7 @@ __metadata:
     "@react-native-firebase/firestore": "npm:^21.0.0"
     "@react-native-firebase/messaging": "npm:^21.0.0"
     "@react-native-google-signin/google-signin": "npm:^13.1.0"
+    "@react-native-picker/picker": "npm:^2.8.1"
     "@react-native/babel-preset": "npm:0.75.3"
     "@react-native/eslint-config": "npm:0.75.3"
     "@react-native/metro-config": "npm:0.75.3"
@@ -3977,6 +3979,7 @@ __metadata:
     react: "npm:18.3.1"
     react-native: "npm:0.75.3"
     react-native-gesture-handler: "npm:^2.20.0"
+    react-native-picker-select: "npm:^9.3.1"
     react-native-reanimated: "npm:^3.15.3"
     react-native-safe-area-context: "npm:^4.11.0"
     react-native-screens: "npm:^3.34.0"
@@ -5442,9 +5445,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.28":
-  version: 1.5.29
-  resolution: "electron-to-chromium@npm:1.5.29"
-  checksum: 10c0/ae4849f1fe8d756d30c6f5f992803d8550a98b38a30aecc7d9776858cf229ad05b12cb9f7675f0a89330a077d16e28388cfe394fdd9d0828ffe860c8568c95c2
+  version: 1.5.30
+  resolution: "electron-to-chromium@npm:1.5.30"
+  checksum: 10c0/f639a39ea3111e3661e4460575bd1392b54d45817617d8cf213e785a9ad9de897fee885d7b33718d9e628c982748a3da32a8813dad9b7bab1cf8673efb5689d6
   languageName: node
   linkType: hard
 
@@ -6246,9 +6249,9 @@ __metadata:
   linkType: hard
 
 "flow-parser@npm:0.*":
-  version: 0.247.0
-  resolution: "flow-parser@npm:0.247.0"
-  checksum: 10c0/66d5a19adea904ffcfc126d6a4442922a55fd1537e6a48afee1f7d20e1dfe22e8b8fe120305bc64ef5f0cc6c3e36d403275146e15b9f8a3023678e87f883a630
+  version: 0.247.1
+  resolution: "flow-parser@npm:0.247.1"
+  checksum: 10c0/1f4b11794895eb1be4dd7c78a0960835b6cc4191217761057985dcb827938b42072ac66835f2784b2ea0a4047fb9c36dfba1da8e9e0d5a559286ac608ebda9c4
   languageName: node
   linkType: hard
 
@@ -8070,6 +8073,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isequal@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
+  languageName: node
+  linkType: hard
+
+"lodash.isobject@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "lodash.isobject@npm:3.0.2"
+  checksum: 10c0/da4c8480d98b16835b59380b2fbd43c54081acd9466febb788ba77c434384349e0bec162d1c4e89f613f21687b2b6d8384d8a112b80da00c78d28d9915a5cdde
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -9503,6 +9520,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-picker-select@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "react-native-picker-select@npm:9.3.1"
+  dependencies:
+    lodash.isequal: "npm:^4.5.0"
+    lodash.isobject: "npm:^3.0.2"
+  peerDependencies:
+    "@react-native-picker/picker": ^2.4.0
+  checksum: 10c0/5adc579f4295376a4413cf987cfec8ed1f1dc4942d2983f51ba7f74ea2e9af38393ad977267ff1698c3bc700061b24ef2d2762caf510a62d507a546ce63d082e
+  languageName: node
+  linkType: hard
+
 "react-native-ratings@npm:^8.1.0":
   version: 8.1.0
   resolution: "react-native-ratings@npm:8.1.0"
@@ -10767,8 +10796,8 @@ __metadata:
   linkType: hard
 
 "terser@npm:^5.15.0":
-  version: 5.34.0
-  resolution: "terser@npm:5.34.0"
+  version: 5.34.1
+  resolution: "terser@npm:5.34.1"
   dependencies:
     "@jridgewell/source-map": "npm:^0.3.3"
     acorn: "npm:^8.8.2"
@@ -10776,7 +10805,7 @@ __metadata:
     source-map-support: "npm:~0.5.20"
   bin:
     terser: bin/terser
-  checksum: 10c0/74e8ef4e565e5600415cd9377a90eed419b8076465d453c0c76aef4053c45371512d2de76c34d01e004cdd49ea5a749d77eeb343f7e665b2d172158ca08ba23e
+  checksum: 10c0/51c7d704c5c4ae88bf937124112c9972aed4e1fd29d805cc2d86e0f54cd631ecd4e69db5bb3c1e3b450c741c86e2313328bea0fde925329e8a31a07a7941723c
   languageName: node
   linkType: hard
 
