@@ -43,52 +43,53 @@ const Login = ({navigation}) => {
   const [matkhau, setPass] = useState('');
   const [hienthi, setHienthi] = useState(true);
   const hanlderlogin = async () => {
-    try {
-      if (emailphone == '' || matkhau == '') {
-        alert('vui lòng nhập tài khoản hoặc mật khẩu ');
-        return;
-      }
+    navigation.navigate('Bottomtab_Navigation');
+    // try {
+    //   if (emailphone == '' || matkhau == '') {
+    //     alert('vui lòng nhập tài khoản hoặc mật khẩu ');
+    //     return;
+    //   }
 
-      const {data} = await axios.post(
-        `${path}/api/user/login`,
-        {
-          email: emailphone,
-          password: matkhau,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+    //   const {data} = await axios.post(
+    //     `${path}/api/user/login`,
+    //     {
+    //       email: emailphone,
+    //       password: matkhau,
+    //     },
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //     },
+    //   );
 
-      if (data) {
-        await HandlerNotification.checknotificationPemision(data);
+    //   if (data) {
+    //     await HandlerNotification.checknotificationPemision(data);
 
-        await AsyncStorage.setItem('data', JSON.stringify(data));
-        await AsyncStorage.setItem(
-          'accessToken',
-          JSON.stringify(data.ascesstoken),
-        );
-        await AsyncStorage.setItem(
-          'refreshToken',
-          JSON.stringify(data.refreshtoken),
-        );
-        const getdata = await AsyncStorage.getItem('data');
+    //     await AsyncStorage.setItem('data', JSON.stringify(data));
+    //     await AsyncStorage.setItem(
+    //       'accessToken',
+    //       JSON.stringify(data.ascesstoken),
+    //     );
+    //     await AsyncStorage.setItem(
+    //       'refreshToken',
+    //       JSON.stringify(data.refreshtoken),
+    //     );
+    //     const getdata = await AsyncStorage.getItem('data');
 
-        navigation.navigate('Home');
-        // setPass('');
-        // setName('');
-      } else {
-        alert('tài khoản hoặc mật khẩu không chính xác');
-      }
-    } catch (eror) {
-      if (eror === 403) {
-        console.log('tai khoan mât khẩu không chình xác');
-      } else {
-        console.log(eror, 'looi dang nhap  voiw gg');
-      }
-    }
+    //     navigation.navigate('Home');
+    //     // setPass('');
+    //     // setName('');
+    //   } else {
+    //     alert('tài khoản hoặc mật khẩu không chính xác');
+    //   }
+    // } catch (eror) {
+    //   if (eror === 403) {
+    //     console.log('tai khoan mât khẩu không chình xác');
+    //   } else {
+    //     console.log(eror, 'looi dang nhap  voiw gg');
+    //   }
+    // }
   };
   const [eye, setEys] = useState(false);
   const anhien = () => {

@@ -22,51 +22,77 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import FlashMessage, {showMessage} from 'react-native-flash-message';
 import {FlashList} from '@shopify/flash-list';
 import {data} from './fectdata.js';
-import OverPickerView from './OverPickerView.js';
-import HeaderComponent from './HeaderComponent.js';
-const Home_screen = () => {
+
+const HeaderComponent = ({onAddPress, onSearchPress, onMessagePress}) => {
   const color = useSelector(state => state.colorApp.value);
   const insets = useSafeAreaInsets();
-  const [isModal, setIsModal] = useState(false);
-  const onPressAdd = () => {
-    setIsModal(!isModal);
-  };
-  // Hàm xử lý sự kiện khi nhấn vào Search
-  const onPressSearch = () => {
-    alert('Search button pressed');
-    // Xử lý logic tìm kiếm ở đây
-  };
 
-  // Hàm xử lý sự kiện khi nhấn vào Message
-  const onPressMessage = () => {
-    alert('Message button pressed');
-    // Xử lý logic tin nhắn ở đây
-  };
   return (
     <View
       style={[
-        styles.container,
-        {backgroundColor: color.gray2, paddingTop: insets.top},
+        {
+          width: '100%',
+          height: '50%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 20,
+        },
       ]}>
-      <FlashList
-        ListHeaderComponent={
-          <HeaderComponent
-            onAddPress={onPressAdd}
-            onSearchPress={onPressSearch}
-            onMessagePress={onPressMessage}
+      <Text
+        style={{
+          color: color.white,
+          fontWeight: '800',
+          fontSize: 20,
+          fontFamily: 'Helvetica',
+        }}>
+        METANET
+      </Text>
+      <View style={[styles.header2]}>
+        <TouchableOpacity onPress={onAddPress}>
+          <Add
+            style={{
+              width: 28,
+              height: 28,
+
+              boderRadius: 100,
+            }}
+            width={28}
+            height={28}
+            stroke={'white'}
           />
-        }
-        data={data}
-        renderItem={({item}) => <Text>{item.title}</Text>}
-        estimatedItemSize={200}
-      />
-      <Modal visible={isModal} transparent={false}>
-        <OverPickerView onAddPress={onPressAdd} />
-      </Modal>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onSearchPress}>
+          <Search
+            style={{
+              width: 28,
+              height: 28,
+
+              boderRadius: 100,
+            }}
+            width={28}
+            height={28}
+            stroke={'white'}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onMessagePress}>
+          <Message
+            style={{
+              width: 28,
+              height: 28,
+              boderRadius: 100,
+            }}
+            width={28}
+            height={28}
+            stroke={'white'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
-export default Home_screen;
+
+export default HeaderComponent;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
