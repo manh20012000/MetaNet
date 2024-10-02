@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../Screen/User_Auth/login.js';
 import Register from '../Screen/User_Auth/register.js';
 import Find_user from '../Screen/User_Auth/fogetpass.js';
+import Forgetpass from '../Screen/User_Auth/fogetpass.js';
 const Stack = createNativeStackNavigator();
 const Navigation = () => {
   return (
@@ -20,6 +21,7 @@ const Navigation = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Find_user" component={Find_user} />
+        <Stack.Screen name="ForgetPass" component={Forgetpass} />
       </Stack.Navigator>
     </NavigationContainer>
   );

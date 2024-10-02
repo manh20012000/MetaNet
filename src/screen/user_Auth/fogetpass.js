@@ -39,11 +39,54 @@ const Find_user = ({navigation}) => {
   const color = useSelector(state => state.colorApp.value);
   const insets = useSafeAreaInsets();
   const {width, height} = useWindowDimensions();
+  const [numberPhone, setNumberPhone] = useState('');
+  const [isTouch, setIsTouch] = useState(true);
   const handlerGenaraID = async () => {
-      
+    if (numberPhone.length > 10 || numberPhone.length < 10) {
+      showMessage({
+        message: 'Đăng ký thất bại!',
+        description: 'Có lỗi xảy ra, vui lòng thử lại.',
+        type: 'danger',
+        icon: 'danger',
+        duration: 3000, // Thời gian hiển thị thông báo
+      });
+      return;
     }
+    const numberRandom = Math.floor(100000 + Math.random() * 900000);
+    console.log(numberRandom);
+    await AsyncStorage.setItem('id_forget', numberRandom.toString());
+    navigation.navigate('ForgetPass');
+    // try {
+    //   const respons = await axios.post(`${path}/api/user/send-forget`, {
+    //     numberRandom,
+    //     numberPhone,
+    //   });
+    //   if (respons.statusCode === 200) {
+    //     showMessage({
+    //       message: 'Đã gửi mã xác nhận!',
+    //       description: 'Vui lòng check tin nhắn của bạn để tiếp tục.',
+    //       type: 'success',
+    //       icon: 'success',
+    //       duration: 3000,
+    //     });
+    //     navigation.navigate('ForgetPass');
+    //   } else {
+    //     showMessage({
+    //       message: 'Đăng ký thất bại!',
+    //       description: 'Có l��i xảy ra, vui lòng thử lại.',
+    //       type: 'danger',
+    //       icon: 'danger',
+    //       duration: 3000, // Th��i gian hiển thị thông báo
+    //     });
+    //   }
+    // } catch (e) {}
+  };
   return (
     <ScrollView style={{flex: 1}}>
+      <FlashMessage
+        position="top"
+        style={{borderRadius: 10, marginTop: '5%'}}
+      />
       <View
         style={[
           styles.container,
@@ -68,15 +111,25 @@ const Find_user = ({navigation}) => {
         </View>
         <View style={[styles.viewinput, {width: width, height: width / 5}]}>
           <TextInput
+            onChangeText={text => {
+              setNumberPhone(text);
+              if (text.length > 0 && isTouch === true) {
+                setIsTouch(false);
+              }
+            }}
             placeholder="nhập số điện thoại của bạn"
             placeholderTextColor={color.black}
             keyboardType="numeric"
             style={[
               styles.textinput,
               {width: '90%', height: '76%', backgroundColor: color.gray},
-            ]}></TextInput>
+            ]}
+          />
         </View>
-        <TouchableOpacity style={[styles.touchsend, {color: color.pink}]}>
+        <TouchableOpacity
+          disabled={isTouch}
+          onPress={handlerGenaraID}
+          style={[styles.touchsend, {color: color.pink}]}>
           <Text>Xác nhận gữi sms</Text>
         </TouchableOpacity>
       </View>
