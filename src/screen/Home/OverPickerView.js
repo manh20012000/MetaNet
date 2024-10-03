@@ -13,9 +13,14 @@ import Video, {VideoRef} from 'react-native-video';
 import React, {useEffect, useReducer, useState} from 'react';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {Cameraicon} from '../../assets/svg/svgfile';
-const OverPickerView = ({onPressAdd}) => {
+import {launchCamera} from 'react-native-image-picker';
+const OverPickerView = ({onPressAdd, navigation}) => {
   const [photos, setPhotos] = useState([]);
+  const [imagePickture, setImagePickture] = useState([]);
+  const [page, setPage] = useState(1); // State quản lý pagination (số lượng đã tải)
   const {width, height} = useWindowDimensions();
+  const [list_image, setListImage] = useState([]);
+  const [Is_selected, setSelectedItems] = useState(false);
   async function hasAndroidPermission() {
     const getCheckPermissionPromise = () => {
       if (Platform.Version >= 33) {
@@ -62,24 +67,80 @@ const OverPickerView = ({onPressAdd}) => {
 
     return await getRequestPermissionPromise();
   }
+  const fetchPhotos = async () => {
+    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
+      return;
+    }
+    const Photos = await CameraRoll.getPhotos({
+      assetType: 'All',
+      first: 5, // Số lượng tải tùy thuộc vào số trang hiện tại
+    });
 
+    if (Photos.edges && Photos.edges.length > 0) {
+      setPhotos([{node: {image: 'máy ảnh', id: '12345'}}, ...Photos.edges]);
+      setPage(prevPage => prevPage + 1);
+    } else {
+      console.log('No photos found');
+    }
+  };
   useEffect(() => {
-    console.log('hahahahah');
-    // Fetch photos from CameraRoll
-    const fetchPhotos = async () => {
-      if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-        return;
-      }
-      const Photos = await CameraRoll.getPhotos({
-        assetType: 'All',
-        first: 10,
-      });
-
-      setPhotos([{node: {image: 'may ảnh'}}, ...Photos.edges]);
-    };
-
     fetchPhotos();
   }, []);
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        openCamera();
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err, 'lỗi với mở camera ');
+    }
+  };
+
+  const openCamera = () => {
+    let options = {
+      mediaType: 'photo',
+      saveToPhotos: true,
+    };
+
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled camera');
+      } else if (response.errorCode) {
+        console.log('Camera error: ', response.errorMessage);
+      } else {
+        console.log('Image URI: ', response.assets);
+        setImagePickture(response.assets);
+        navigation.navigate('OnpicktureUpload');
+      }
+    });
+    /*[{"fileName": "rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "fileSize": 1989291, "height": 3264, "originalPath": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "width": 2448}] */
+  };
+  const selectTed = item => {
+    setSelectedItems(prevSelectedItems => {
+      if (prevSelectedItems.includes(item.node.id)) {
+        // If item is already selected, remove it
+        return prevSelectedItems.filter(id => id !== item.node.id);
+      } else {
+        // If item is not selected, add it
+        return [...prevSelectedItems, item.node.id];
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.navBar}>
@@ -92,19 +153,29 @@ const OverPickerView = ({onPressAdd}) => {
         <TouchableOpacity style={styles.navButton}>
           <Text style={styles.navText}>Memories</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => {
+            console.log('Press');
+            fetchPhotos();
+          }}>
           <Text style={styles.navText}>Photos</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Recent Images */}
       <View style={styles.gridContainer}>
         <FlatList
           data={photos}
+          keyExtractor={(item, index) => {
+            index.toString();
+          }}
           renderItem={({item}) => (
             <>
-              {item.node.image === 'may ảnh' ? (
+              {item.node.image === 'máy ảnh' ? (
                 <TouchableOpacity
+                  onPress={() => {
+                    requestCameraPermission();
+                  }}
                   style={[
                     styles.imageWrapper,
                     {
@@ -117,20 +188,39 @@ const OverPickerView = ({onPressAdd}) => {
                     },
                   ]}>
                   <Cameraicon />
-                  {/* Đảm bảo chuỗi văn bản nằm trong <Text> */}
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity
+                <View
                   style={[
                     styles.imageWrapper,
                     {
-                      backgroundColor: 'pink',
+                      backgroundColor: 'black',
                       width: width / 2,
                       height: height / 3,
                       justifyContent: 'center',
                       alignItems: 'center',
+                      position: 'relative',
                     },
                   ]}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      selectTed(item);
+                    }}
+                    style={{
+                      width: width / 15,
+                      height: width / 15,
+                      position: 'absolute',
+                      top: '2%',
+                      right: '2%',
+                      backgroundColor: Is_selected
+                        ? 'blue'
+                        : 'rbga(255,255,255,0.5)',
+                      borderWidth: 3,
+                      borderColor: 'white',
+                      borderRadius: 100,
+                      zIndex: 1,
+                      opacity: 0.7,
+                    }}></TouchableOpacity>
                   {item.node.type === 'image/jpeg' ? (
                     <Image
                       source={{uri: item.node.image.uri}}
@@ -145,15 +235,23 @@ const OverPickerView = ({onPressAdd}) => {
                       repeat
                     />
                   )}
-                </TouchableOpacity>
+                </View>
               )}
             </>
           )}
-          keyExtractor={item => item.node.image.uri} // Sử dụng URI làm key
           numColumns={3}
+          // initialNumToRender={10} // Initial number of items to render
+          // maxToRenderPerBatch={10} // Maximum number of items to render per batch
+          // windowSize={5}
+          // onEndReached={fetchPhotos}
+          // onEndReachedThreshold={0.3}
+          // getItemLayout={(data, index) => ({
+          //   length: height / 3,
+          //   offset: (height / 3) * index,
+          //   index,
+          // })}
         />
       </View>
-
       {/* Select Button */}
       <TouchableOpacity style={styles.selectButton}>
         <Text style={styles.selectText}>Select</Text>

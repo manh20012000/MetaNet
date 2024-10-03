@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../Screen/User_Auth/login.js';
 import Register from '../Screen/User_Auth/register.js';
 import Bottomtab_Navigation from './bottomtab_Navigation.js';
+import OnpicktureUpload from '../Screen/Home/OnUpArticle.js';
 const Stack = createNativeStackNavigator();
 const Navigation = () => {
   return (
@@ -23,6 +24,7 @@ const Navigation = () => {
           component={Bottomtab_Navigation}
         />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="OnpicktureUpload" component={OnpicktureUpload} />
       </Stack.Navigator>
     </NavigationContainer>
   );

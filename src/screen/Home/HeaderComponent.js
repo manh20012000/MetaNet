@@ -23,7 +23,12 @@ import FlashMessage, {showMessage} from 'react-native-flash-message';
 import {FlashList} from '@shopify/flash-list';
 import {data} from './fectdata.js';
 
-const HeaderComponent = ({onAddPress, onSearchPress, onMessagePress}) => {
+const HeaderComponent = ({
+  onAddPress,
+  onSearchPress,
+  onMessagePress,
+  navigation,
+}) => {
   const color = useSelector(state => state.colorApp.value);
   const insets = useSafeAreaInsets();
 

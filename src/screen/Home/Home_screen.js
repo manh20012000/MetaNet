@@ -24,7 +24,7 @@ import {FlashList} from '@shopify/flash-list';
 import {data} from './fectdata.js';
 import OverPickerView from './OverPickerView.js';
 import HeaderComponent from './HeaderComponent.js';
-const Home_screen = () => {
+const Home_screen = ({navigation}) => {
   const color = useSelector(state => state.colorApp.value);
   const insets = useSafeAreaInsets();
   const [isModal, setIsModal] = useState(false);
@@ -61,7 +61,7 @@ const Home_screen = () => {
         estimatedItemSize={200}
       />
       <Modal visible={isModal} transparent={false}>
-        <OverPickerView onAddPress={onPressAdd} />
+        <OverPickerView onAddPress={onPressAdd} navigation={navigation} />
       </Modal>
     </View>
   );
