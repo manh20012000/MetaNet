@@ -19,8 +19,8 @@ const OverPickerView = ({onPressAdd, navigation}) => {
   const [imagePickture, setImagePickture] = useState([]);
   const [page, setPage] = useState(1); // State quản lý pagination (số lượng đã tải)
   const {width, height} = useWindowDimensions();
-  const [list_image, setListImage] = useState([]);
-  const [Is_selected, setSelectedItems] = useState(false);
+  const [isSelect, setIsSelect] = useState(false);
+  const [ArraySelect, setArrayselectImage] = useState([]);
   async function hasAndroidPermission() {
     const getCheckPermissionPromise = () => {
       if (Platform.Version >= 33) {
@@ -73,11 +73,13 @@ const OverPickerView = ({onPressAdd, navigation}) => {
     }
     const Photos = await CameraRoll.getPhotos({
       assetType: 'All',
-      first: 5, // Số lượng tải tùy thuộc vào số trang hiện tại
+      first: 15 * page, // Số lượng tải tùy thuộc vào số trang hiện tại
     });
 
     if (Photos.edges && Photos.edges.length > 0) {
-      setPhotos([{node: {image: 'máy ảnh', id: '12345'}}, ...Photos.edges]);
+      const data = [{node: {image: 'máy ảnh', id: '12345'}}, ...Photos.edges];
+
+      setPhotos(data);
       setPage(prevPage => prevPage + 1);
     } else {
       console.log('No photos found');
@@ -123,20 +125,45 @@ const OverPickerView = ({onPressAdd, navigation}) => {
         console.log('Camera error: ', response.errorMessage);
       } else {
         console.log('Image URI: ', response.assets);
+        const item = response.assets[0];
+        //[{"fileName": "rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "fileSize": 1989291, "height": 3264, "originalPath": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "width": 2448}] */
+        const imagepicker = {
+          id: item.id,
+          uri: item.uri,
+          width: item.width,
+          height: item.height,
+          name: item.filename,
+          type: item.type,
+          fileSize: item.fileSize,
+        };
+
         setImagePickture(response.assets);
-        navigation.navigate('OnpicktureUpload');
+        navigation.navigate('OnpicktureUpload', [{imagepicker}]);
       }
     });
-    /*[{"fileName": "rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "fileSize": 1989291, "height": 3264, "originalPath": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "width": 2448}] */
   };
   const selectTed = item => {
-    setSelectedItems(prevSelectedItems => {
-      if (prevSelectedItems.includes(item.node.id)) {
+    setArrayselectImage(prevSelectedItems => {
+      const isSelected = prevSelectedItems.some(
+        selected => selected?.id === item.node.id,
+      );
+      if (isSelected) {
         // If item is already selected, remove it
-        return prevSelectedItems.filter(id => id !== item.node.id);
+        return prevSelectedItems.filter(
+          selected => selected?.id !== item.node.id,
+        );
       } else {
         // If item is not selected, add it
-        return [...prevSelectedItems, item.node.id];
+        const imagepicker = {
+          id: item.node.id,
+          uri: item.node.image.uri,
+          width: item.node.image.width,
+          height: item.node.image.height,
+          name: item.node.image.filename,
+          type: item.node.image.type,
+          fileSize: item.node.image.fileSize,
+        };
+        return [...prevSelectedItems, imagepicker];
       }
     });
   };
@@ -162,100 +189,117 @@ const OverPickerView = ({onPressAdd, navigation}) => {
           <Text style={styles.navText}>Photos</Text>
         </TouchableOpacity>
       </View>
-
+      <TouchableOpacity
+        onPress={() => {
+          const checked = ArraySelect.length;
+          console.log(ArraySelect);
+          console.log(checked > 0);
+          if (checked > 0) {
+            setIsSelect(false);
+            navigation.navigate('OnpicktureUpload', ArraySelect);
+          } else {
+            setIsSelect(!isSelect);
+          }
+        }}
+        style={styles.selectButton}>
+        <Text style={styles.selectText}>
+          {ArraySelect.length > 0 ? 'Tiếp' : 'Select'}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.gridContainer}>
         <FlatList
           data={photos}
-          keyExtractor={(item, index) => {
-            index.toString();
-          }}
-          renderItem={({item}) => (
-            <>
-              {item.node.image === 'máy ảnh' ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    requestCameraPermission();
-                  }}
-                  style={[
-                    styles.imageWrapper,
-                    {
-                      backgroundColor: '#333333',
-                      width: width / 3,
-                      height: height / 5,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                    },
-                  ]}>
-                  <Cameraicon />
-                </TouchableOpacity>
-              ) : (
-                <View
-                  style={[
-                    styles.imageWrapper,
-                    {
-                      backgroundColor: 'black',
-                      width: width / 2,
-                      height: height / 3,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      position: 'relative',
-                    },
-                  ]}>
+          keyExtractor={item => item.node.id}
+          renderItem={({item, index}) => {
+            // console.log(index, 'haahahindex');
+            return (
+              <>
+                {item.node.image === 'máy ảnh' ? (
                   <TouchableOpacity
                     onPress={() => {
-                      selectTed(item);
+                      requestCameraPermission();
                     }}
-                    style={{
-                      width: width / 15,
-                      height: width / 15,
-                      position: 'absolute',
-                      top: '2%',
-                      right: '2%',
-                      backgroundColor: Is_selected
-                        ? 'blue'
-                        : 'rbga(255,255,255,0.5)',
-                      borderWidth: 3,
-                      borderColor: 'white',
-                      borderRadius: 100,
-                      zIndex: 1,
-                      opacity: 0.7,
-                    }}></TouchableOpacity>
-                  {item.node.type === 'image/jpeg' ? (
-                    <Image
-                      source={{uri: item.node.image.uri}}
-                      style={styles.image}
-                      resizeMode="contain"
-                    />
-                  ) : (
-                    <Video
-                      source={{uri: item.node.image.uri}}
-                      style={styles.image}
-                      resizeMode="contain"
-                      repeat
-                    />
-                  )}
-                </View>
-              )}
-            </>
-          )}
+                    style={[
+                      styles.imageWrapper,
+                      {
+                        backgroundColor: '#333333',
+                        width: width / 3,
+                        height: height / 5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                      },
+                    ]}>
+                    <Cameraicon />
+                  </TouchableOpacity>
+                ) : (
+                  <View
+                    style={[
+                      styles.imageWrapper,
+                      {
+                        backgroundColor: 'black',
+                        width: width / 2,
+                        height: height / 3,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'relative',
+                      },
+                    ]}>
+                    {isSelect && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          selectTed(item);
+                        }}
+                        style={{
+                          width: width / 15,
+                          height: width / 15,
+                          position: 'absolute',
+                          top: '2%',
+                          right: '2%',
+                          backgroundColor: ArraySelect.some(
+                            selected => selected?.id === item.node.id,
+                          )
+                            ? 'blue'
+                            : 'rgba(255,255,255,0.5)', // Sửa "rbga" thành "rgba"
+                          borderWidth: 3,
+                          borderColor: 'white',
+                          borderRadius: 100,
+                          zIndex: 1,
+                          opacity: 0.7,
+                        }}></TouchableOpacity>
+                    )}
+                    {item.node.type === 'image/jpeg' ? (
+                      <Image
+                        source={{uri: item.node.image.uri}}
+                        style={styles.image}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <Video
+                        source={{uri: item.node.image.uri}}
+                        style={styles.image}
+                        resizeMode="contain"
+                        repeat
+                      />
+                    )}
+                  </View>
+                )}
+              </>
+            );
+          }}
           numColumns={3}
-          // initialNumToRender={10} // Initial number of items to render
-          // maxToRenderPerBatch={10} // Maximum number of items to render per batch
+          initialNumToRender={10} // Initial number of items to render
+          maxToRenderPerBatch={10} // Maximum number of items to render per batch
           // windowSize={5}
-          // onEndReached={fetchPhotos}
-          // onEndReachedThreshold={0.3}
-          // getItemLayout={(data, index) => ({
-          //   length: height / 3,
-          //   offset: (height / 3) * index,
-          //   index,
-          // })}
+          onEndReached={fetchPhotos}
+          onEndReachedThreshold={0.3}
+          getItemLayout={(data, index) => ({
+            length: height / 3,
+            offset: (height / 3) * index,
+            index,
+          })}
         />
       </View>
-      {/* Select Button */}
-      <TouchableOpacity style={styles.selectButton}>
-        <Text style={styles.selectText}>Select</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -272,25 +316,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    paddingVertical: 15,
+    // paddingVertical: 15,
     backgroundColor: '#1c1c1e',
     width: '100%',
-    height: '20%',
+    height: '10%',
   },
   navButton: {
     width: '20%',
-    height: '100%',
+    height: '90%',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#fff',
     borderRadius: 5,
-
-    paddingHorizontal: 10,
   },
   navText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
+    fontWeight: 'bold',
   },
   gridContainer: {
     flex: 1,
@@ -304,9 +347,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   selectButton: {
-    position: 'absolute',
-    top: '0%',
-    right: '2%',
     backgroundColor: '#007aff',
     padding: 10,
     borderRadius: 5,
@@ -314,5 +354,6 @@ const styles = StyleSheet.create({
   selectText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });

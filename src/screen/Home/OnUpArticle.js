@@ -21,17 +21,47 @@ import {Formik} from 'formik';
 import Spinner from 'react-native-loading-spinner-overlay';
 import FlashMessage, {showMessage} from 'react-native-flash-message';
 import {FlashList} from '@shopify/flash-list';
-
+import {Backsvg} from '../../assets/svg/svgfile';
 const OnpicktureUpload = ({route, navigation}) => {
   const color = useSelector(state => state.colorApp.value);
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets({});
+  console.log(route.params);
   return (
-    <View style={[styles.container, {backgroundColor: color.black}]}></View>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: color.gray2, paddingTop: insets.top},
+      ]}>
+      <TouchableOpacity style={[styles.backsvg]}>
+        <Backsvg
+          backgroundColor="white"
+          fill={'white'}
+          stroke={'white'}
+          style={{backgroundColor: color.white}}
+        />
+      </TouchableOpacity>
+    </View>
   );
 };
 export default OnpicktureUpload;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: '3%',
+    paddingVertical: '2%',
+    backgroundColor: '#212121',
+    width: '100%',
+    height: '5%',
+  },
+  backsvg: {
+    width: '10%',
+    height: '5%',
+    left: 15,
+    top: 20,
   },
 });
