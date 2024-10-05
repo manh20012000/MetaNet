@@ -279,6 +279,7 @@ const OverPickerView = ({onPressAdd, navigation}) => {
                         source={{uri: item.node.image.uri}}
                         style={styles.image}
                         resizeMode="contain"
+                        paused
                         repeat
                       />
                     )}
