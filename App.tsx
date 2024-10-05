@@ -28,7 +28,7 @@ import {store} from './src/Redux_Toolkit/Store';
 import {Provider} from 'react-redux';
 import Navigation from './src/navigation/navigation.js';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-
+import {SocketProvider} from './src/util/socket.io.js';
 function App(): React.JSX.Element {
   return (
     <Provider store={store}>
@@ -40,8 +40,9 @@ function App(): React.JSX.Element {
           //  backgroundColor={'rgba(233,233,233,0.9)'}
           backgroundColor={'transparent'}
         />
-
-        <Navigation />
+        <SocketProvider>
+          <Navigation />
+        </SocketProvider>
       </SafeAreaProvider>
     </Provider>
   );

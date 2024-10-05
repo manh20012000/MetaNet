@@ -41,7 +41,7 @@ export class HandlerNotification {
   static update = async (fcmtoken, auth) => {
     try {
       const {data} = await axios.post(
-        `${USER_URL}/api/user/getFCMTOKEN`,
+        `${USER_URL}/api/user/getfcmToken`,
         {fcmtoken, id: this.userda._id},
         {
           headers: {
@@ -52,7 +52,7 @@ export class HandlerNotification {
         },
       );
 
-      await AsyncStorage.setItem('data', JSON.stringify(data.user));
+      await AsyncStorage.setItem('user', JSON.stringify(data.user));
     } catch (err) {
       console.log('can not update token fail err', err);
     }

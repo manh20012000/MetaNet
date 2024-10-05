@@ -22,6 +22,7 @@ import {
   statusCodes,
   User,
 } from '@react-native-google-signin/google-signin';
+import Spinner from 'react-native-loading-spinner-overlay';
 import messaging from '@react-native-firebase/messaging';
 import {
   Avatar_user,
@@ -32,6 +33,7 @@ import {
   Google,
   Facebook,
 } from '../../assets/svg/svgfile.js';
+import {login} from '../../Redux_Toolkit/Reducer/auth.slice.js';
 GoogleSignin.configure({
   client_id:
     '696940661197-03ljc2ptvfmdghjiun0gbfc1l8cdmnep.apps.googleusercontent.com',
@@ -39,57 +41,63 @@ GoogleSignin.configure({
 const Login = ({navigation}) => {
   const color = useSelector(state => state.colorApp.value);
   // const {datas, setData} = useContext([]);
+  const dispatch = useDispatch();
   const [emailphone, setName] = useState('');
   const [matkhau, setPass] = useState('');
   const [hienthi, setHienthi] = useState(true);
+  const [loading, setLoading] = useState(false);
   const hanlderlogin = async () => {
-    navigation.navigate('Bottomtab_Navigation');
-    // try {
-    //   if (emailphone == '' || matkhau == '') {
-    //     alert('vui lòng nhập tài khoản hoặc mật khẩu ');
-    //     return;
-    //   }
+    try {
+      if (emailphone === '' || matkhau === '') {
+        alert('vui lòng nhập tài khoản hoặc mật khẩu ');
+        return;
+      }
+      setLoading(true);
+      console.log('nhảy login');
+      const {data} = await axios.post(
+        `${path}/api/user/login`,
+        {
+          email: emailphone,
+          password: matkhau,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
-    //   const {data} = await axios.post(
-    //     `${path}/api/user/login`,
-    //     {
-    //       email: emailphone,
-    //       password: matkhau,
-    //     },
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     },
-    //   );
+      if (data.data) {
+        const user = data.data;
+        console.log(user, 'userdsbdsh');
+        dispatch(login(user));
+        await HandlerNotification.checknotificationPemision(user);
 
-    //   if (data) {
-    //     await HandlerNotification.checknotificationPemision(data);
-
-    //     await AsyncStorage.setItem('data', JSON.stringify(data));
-    //     await AsyncStorage.setItem(
-    //       'accessToken',
-    //       JSON.stringify(data.ascesstoken),
-    //     );
-    //     await AsyncStorage.setItem(
-    //       'refreshToken',
-    //       JSON.stringify(data.refreshtoken),
-    //     );
-    //     const getdata = await AsyncStorage.getItem('data');
-
-    //     navigation.navigate('Home');
-    //     // setPass('');
-    //     // setName('');
-    //   } else {
-    //     alert('tài khoản hoặc mật khẩu không chính xác');
-    //   }
-    // } catch (eror) {
-    //   if (eror === 403) {
-    //     console.log('tai khoan mât khẩu không chình xác');
-    //   } else {
-    //     console.log(eror, 'looi dang nhap  voiw gg');
-    //   }
-    // }
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        await AsyncStorage.setItem(
+          'accessToken',
+          JSON.stringify(user.refreshToken),
+        );
+        await AsyncStorage.setItem(
+          'refreshToken',
+          JSON.stringify(user.refreshToken),
+        );
+        setPass('');
+        setName('');
+        navigation.navigate('Bottomtab_Navigation');
+        setLoading(false);
+      } else {
+        alert('tài khoản hoặc mật khẩu không chính xác');
+      }
+      setLoading(false);
+    } catch (eror) {
+      if (eror === 403) {
+        console.log('tai khoan mât khẩu không chình xác');
+      } else {
+        console.log(eror, 'lỗi đăng nhập');
+      }
+      setLoading(false);
+    }
   };
   const [eye, setEys] = useState(false);
   const anhien = () => {
@@ -103,8 +111,7 @@ const Login = ({navigation}) => {
       });
       await GoogleSignin.hasPlayServices();
       const userInfor = await GoogleSignin.signIn();
-      const gguser = userInfor.data;
-      console.log(gguser);
+      const gguser = userInfor.data.user;
       const authStatus = await messaging().requestPermission();
       if (
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -117,15 +124,21 @@ const Login = ({navigation}) => {
           let avatar = gguser.photo;
           if (gguser.photo == null) {
             avatar =
-              'https://cdn.thoitiet247.edu.vn/wp-content/uploads/2024/04/nhung-hinh-anh-girl-xinh-de-thuong.webp';
+              'https://ss-images.saostar.vn/wwebp1200/pc/1613810558698/Facebook-Avatar_2.png';
           }
           const user = {
             email: gguser.email,
             password: gguser.id,
             name: gguser.name,
+            firstname: gguser.familyName,
+            lastname: gguser.givenName,
             avatar: avatar,
             fcmtoken: [token],
+            birthday: gguser.birthday ?? '',
+            gender: gguser.gender ?? '',
+            phone: gguser.phoneNumber ?? '',
           };
+          console.log(gguser, token, 'hahahh');
           const {data} = await axios.post(
             `${path}/api/user/siginGoogle`,
             user,
@@ -135,18 +148,19 @@ const Login = ({navigation}) => {
               },
             },
           );
-          console.log(data, 'giá strij dâtta');
-          await AsyncStorage.setItem('data', JSON.stringify(data));
+          const users = data.data;
+          dispatch(login(users));
+          await AsyncStorage.setItem('user', JSON.stringify(users));
           await AsyncStorage.setItem(
             'accessToken',
-            JSON.stringify(data.ascesstoken),
+            JSON.stringify(users.accessToken),
           );
           await AsyncStorage.setItem(
             'refreshToken',
-            JSON.stringify(data.refreshtoken),
+            JSON.stringify(data.refreshToken),
           );
           // await setData(JSON.stringify(data));
-          navigation.navigate('Home');
+          navigation.navigate('Bottomtab_Navigation');
         }
       }
     } catch (error) {
@@ -214,7 +228,6 @@ const Login = ({navigation}) => {
               onChangeText={matkhau => {
                 setPass(matkhau);
                 if (matkhau != '') {
-                  console.log('jajaaj');
                   setEys(true);
                 } else {
                   setEys(false);
@@ -334,6 +347,11 @@ const Login = ({navigation}) => {
           <Facebook />
         </TouchableOpacity>
       </View>
+      <Spinner
+        visible={loading}
+        textContent={'Đang tải...'}
+        textStyle={{color: '#FFF'}}
+      />
       <View style={styles.flooter}></View>
     </ScrollView>
   );
