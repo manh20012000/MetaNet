@@ -9,7 +9,7 @@ import OnpicktureUpload from '../Screen/Home/OnUpArticle.js';
 import {useDispatch} from 'react-redux';
 import {login} from '../Redux_Toolkit/Reducer/auth.slice.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 const Stack = createNativeStackNavigator();
 const Navigation = () => {
   const dispath = useDispatch();
@@ -17,19 +17,19 @@ const Navigation = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const userTokenString = await AsyncStorage.getItem('user');
-      const userTokenObject = JSON.parse(userTokenString);
-      // console.log(typeof userTokenObject, "giá trị sau khi navigate ");
+      const user_String = await AsyncStorage.getItem('user');
+      const userObject = JSON.parse(user_String);
+    
       try {
-        if (userTokenObject !== null) {
-          const decoded = jwtDecode(userTokenObject.refreshToken);
+        if (userObject !== null) {
+          const decoded = jwtDecode(userObject.refreshToken);
           const isTokenExpired = decoded.exp * 1000 < Date.now();
           if (isTokenExpired) {
             setIsLoggedIn(false);
           } else {
             console.log('hahah');
             setIsLoggedIn(true);
-            dispath(login(userTokenObject));
+            dispath(login(userObject));
           }
         } else {
           setIsLoggedIn(false);

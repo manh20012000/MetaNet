@@ -38,6 +38,7 @@ GoogleSignin.configure({
   client_id:
     '696940661197-03ljc2ptvfmdghjiun0gbfc1l8cdmnep.apps.googleusercontent.com',
 });
+import FlashMessage, {showMessage} from 'react-native-flash-message';
 const Login = ({navigation}) => {
   const color = useSelector(state => state.colorApp.value);
   // const {datas, setData} = useContext([]);
@@ -49,7 +50,13 @@ const Login = ({navigation}) => {
   const hanlderlogin = async () => {
     try {
       if (emailphone === '' || matkhau === '') {
-        alert('vui lòng nhập tài khoản hoặc mật khẩu ');
+        showMessage({
+          message: 'Tài khoản hoặc password không đúng!',
+          description: 'Tài khoản hoặc password không đúng!',
+          type: 'danger',
+          icon: 'danger',
+          duration: 3000, // Thời gian hiển thị thông báo (3 giây)
+        });
         return;
       }
       setLoading(true);
@@ -69,14 +76,14 @@ const Login = ({navigation}) => {
 
       if (data.data) {
         const user = data.data;
-        console.log(user, 'userdsbdsh');
+        // console.log(user, 'userdsbdsh');
         dispatch(login(user));
         await HandlerNotification.checknotificationPemision(user);
 
         await AsyncStorage.setItem('user', JSON.stringify(user));
         await AsyncStorage.setItem(
           'accessToken',
-          JSON.stringify(user.refreshToken),
+          JSON.stringify(user.accessToken),
         );
         await AsyncStorage.setItem(
           'refreshToken',
@@ -84,6 +91,13 @@ const Login = ({navigation}) => {
         );
         setPass('');
         setName('');
+        showMessage({
+          message: 'Đăng nhập thành công!',
+          description: 'Đăng nhập thành công!',
+          type: 'success',
+          icon: 'success',
+          duration: 3000, // Thời gian hiển thị thông báo (3 giây)
+        });
         navigation.navigate('Bottomtab_Navigation');
         setLoading(false);
       } else {
@@ -96,6 +110,13 @@ const Login = ({navigation}) => {
       } else {
         console.log(eror, 'lỗi đăng nhập');
       }
+      showMessage({
+        message: 'Đăng nhập thất bại!',
+        description: 'Đăng nhập thất bại!',
+        type: 'danger',
+        icon: 'danger',
+        duration: 3000, // Thời gian hiển thị thông báo (3 giây)
+      });
       setLoading(false);
     }
   };
@@ -175,6 +196,10 @@ const Login = ({navigation}) => {
   return (
     <ScrollView style={[styles.container]}>
       <View style={[styles.header]}>
+        <FlashMessage
+          position="top"
+          style={{borderRadius: 10, width: '90%', alignSelf: 'center'}}
+        />
         <Logos />
         <Text style={[{color: 'black', fontSize: 24, fontWeight: 'bold'}]}>
           Đăng Nhập Tài Khoản
@@ -214,20 +239,20 @@ const Login = ({navigation}) => {
                 borderRadius: 24,
                 borderWidth: 1,
                 borderColor: 'black',
-                paddingHorizontal: '2%',
+                paddingLeft: '2%',
               },
             ]}>
             <Passkey />
             <TextInput
               placeholderTextColor={color.gray}
               placeholder="Enter password"
-              style={[styles.textinput, {fontFamily: 'Fredoka-Bold'}]}
+              style={[styles.textinput, {fontFamily: 'Fredoka-Bold.ttf'}]}
               secureTextEntry={hienthi}
               titleAler="vui long nhap thong tin chnh sac"
               value={matkhau}
-              onChangeText={matkhau => {
-                setPass(matkhau);
-                if (matkhau != '') {
+              onChangeText={text => {
+                setPass(text);
+                if (text !== '') {
                   setEys(true);
                 } else {
                   setEys(false);

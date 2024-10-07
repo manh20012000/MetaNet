@@ -17,13 +17,6 @@ export const SocketProvider = ({children}) => {
       if (user) {
         try {
           const userToken = await AsyncStorage.getItem('user');
-          const userTokenObject = JSON.parse(userToken);
-          // console.log(
-          //   JSON.parse(userToken)?.accessToken,
-          //   "parestoken ",
-          //   userTokenObject
-          // );
-          console.log(userToken, 'connectsocket');
           const accessToken = JSON.parse(userToken)?.accessToken;
           const iduser = JSON.parse(userToken)?._id;
             console.log(accessToken);

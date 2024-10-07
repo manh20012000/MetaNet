@@ -4,13 +4,13 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AuthContext} from '../Navigation/useContext';
 import axios from 'axios';
-import {USER_URL} from '../Util/Url';
+import path from './path_confige';
 export class HandlerNotification {
-  static userda = '';
+  static userData = '';
   static checknotificationPemision = async datauser => {
     const authStatus = await messaging().requestPermission();
-    this.userda = datauser;
-
+    this.userData = datauser;
+    console.log('caap nhat laij fcmtoken4');
     if (
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL
@@ -19,6 +19,7 @@ export class HandlerNotification {
     }
   };
   static getFcmToken = async () => {
+    console.log('caap nhat laij fcmtoken3');
     const fcmtoken = await AsyncStorage.getItem('fcmtoken');
     if (!fcmtoken) {
       const token = await messaging().getToken();
@@ -29,32 +30,51 @@ export class HandlerNotification {
     }
   };
   static updatatokenforuser = async token => {
-    if (this.userda) {
-      const {fcmtoken} = this.userda;
+    // console.log('caap nhat laij fcmtoken2', token);
+    try {
+      if (this.userData) {
+        const {fcmToken} = this.userData;
 
-      if (fcmtoken && !fcmtoken.includes(token)) {
-        fcmtoken.push(token);
-        await this.update(fcmtoken, this.userda);
+        if (fcmToken && !fcmToken.includes(token)) {
+          console.log(typeof fcmToken);
+          // console.log(Object.isFrozen(fcmToken)); // Kiểm tra xem mảng có bị đóng băng không
+          // fcmToken.push(token);
+          const arraysToken = [...fcmToken, token];
+
+          await this.update(arraysToken, this.userData);
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
   };
   static update = async (fcmtoken, auth) => {
     try {
-      const {data} = await axios.post(
-        `${USER_URL}/api/user/getfcmToken`,
-        {fcmtoken, id: this.userda._id},
+      console.log('caap nhat laij fcmtoken1', this.userData._id, fcmtoken);
+      const {data} = await axios.put(
+        `${path}/api/user/fcmtoken/${auth._id}`,
+        {fcmtoken},
         {
           headers: {
             'Content-Type': 'application/json',
-            authorization: auth.accesstoken,
-            'Refresh-Token': auth.refreshtoken,
           },
         },
       );
-
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+      if (data.status === 200) {
+        const dataUser = {
+          _id: data.data._id,
+          name: data.data.name,
+          avatar: data.data.avatar,
+          email: data.data.email,
+          fcmToken: data.data.fcmToken,
+          accessToken: this.userData.accessToken,
+          refreshToken: this.userData.refreshToken,
+        };
+        await AsyncStorage.setItem('user', JSON.stringify(dataUser));
+      }
     } catch (err) {
       console.log('can not update token fail err', err);
+      return null;
     }
   };
 }

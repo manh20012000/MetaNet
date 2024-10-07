@@ -14,7 +14,8 @@ import React, {useEffect, useReducer, useState} from 'react';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {Cameraicon} from '../../assets/svg/svgfile';
 import {launchCamera} from 'react-native-image-picker';
-const OverPickerView = ({onPressAdd, navigation}) => {
+import VideoManager from '@salihgun/react-native-video-processor';
+const OverPickerView = ({onAddPress, navigation}) => {
   const [photos, setPhotos] = useState([]);
   const [imagePickture, setImagePickture] = useState([]);
   const [page, setPage] = useState(1); // State quản lý pagination (số lượng đã tải)
@@ -88,6 +89,7 @@ const OverPickerView = ({onPressAdd, navigation}) => {
   useEffect(() => {
     fetchPhotos();
   }, []);
+
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -138,11 +140,12 @@ const OverPickerView = ({onPressAdd, navigation}) => {
         };
 
         setImagePickture(response.assets);
+        onAddPress();
         navigation.navigate('OnpicktureUpload', [{imagepicker}]);
       }
     });
   };
-  const selectTed = item => {
+  /**  const selectTed = item => {
     setArrayselectImage(prevSelectedItems => {
       const isSelected = prevSelectedItems.some(
         selected => selected?.id === item.node.id,
@@ -166,6 +169,60 @@ const OverPickerView = ({onPressAdd, navigation}) => {
         return [...prevSelectedItems, imagepicker];
       }
     });
+  };
+ */
+  const selectTed = async item => {
+    try {
+      const uri = item.node.image.uri;
+      // console.log(uri);
+      // const result = await VideoManager.getVideoInfo(uri);
+      // console.log(result, 'jahjshdjs');
+
+      // console.log(resultimage, 'jahjshdjs');
+      let result = {};
+      if (item.node.type === 'image/jpeg') {
+        result = await Image.getSize(uri);
+      }
+      setArrayselectImage(prevSelectedItems => {
+        const isSelected = prevSelectedItems.some(
+          selected => selected?.id === item.node.id,
+        );
+        if (isSelected) {
+          // If item is already selected, remove it
+          return prevSelectedItems.filter(
+            selected => selected?.id !== item.node.id,
+          );
+        } else {
+          if (item.node.type === 'image/jpeg') {
+            // Sử dụng VideoProcessor để lấy thông tin vide
+            console.log(result, 'hahah');
+            const imagepicker = {
+              id: item.node.id,
+              uri: item.node.image.uri,
+              width: result.width,
+              height: result.height,
+              name: item.node.image.filename,
+              type: item.node.type,
+              fileSize: item.node.image.fileSize,
+            };
+            return [...prevSelectedItems, imagepicker];
+          } else {
+            const imagepicker = {
+              id: item.node.id,
+              uri: item.node.image.uri,
+              width: item.node.image.width,
+              height: item.node.image.height,
+              name: item.node.image.filename,
+              type: item.node.type,
+              fileSize: item.node.image.fileSize,
+            };
+            return [...prevSelectedItems, imagepicker];
+          }
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -192,10 +249,10 @@ const OverPickerView = ({onPressAdd, navigation}) => {
       <TouchableOpacity
         onPress={() => {
           const checked = ArraySelect.length;
-          console.log(ArraySelect);
-          console.log(checked > 0);
+          console.log(checked > 0, 'jaasjhsj');
           if (checked > 0) {
             setIsSelect(false);
+            onAddPress();
             navigation.navigate('OnpicktureUpload', ArraySelect);
           } else {
             setIsSelect(!isSelect);
@@ -221,6 +278,7 @@ const OverPickerView = ({onPressAdd, navigation}) => {
                     }}
                     style={[
                       styles.imageWrapper,
+                      // eslint-disable-next-line react-native/no-inline-styles
                       {
                         backgroundColor: '#333333',
                         width: width / 3,
@@ -236,6 +294,7 @@ const OverPickerView = ({onPressAdd, navigation}) => {
                   <View
                     style={[
                       styles.imageWrapper,
+                      // eslint-disable-next-line react-native/no-inline-styles
                       {
                         backgroundColor: 'black',
                         width: width / 2,
@@ -246,10 +305,12 @@ const OverPickerView = ({onPressAdd, navigation}) => {
                       },
                     ]}>
                     {isSelect && (
+                      // eslint-disable-next-line react/self-closing-comp
                       <TouchableOpacity
                         onPress={() => {
                           selectTed(item);
                         }}
+                        // eslint-disable-next-line react-native/no-inline-styles
                         style={{
                           width: width / 15,
                           height: width / 15,
@@ -275,13 +336,16 @@ const OverPickerView = ({onPressAdd, navigation}) => {
                         resizeMode="contain"
                       />
                     ) : (
-                      <Video
-                        source={{uri: item.node.image.uri}}
-                        style={styles.image}
-                        resizeMode="contain"
-                        paused
-                        repeat
-                      />
+                      <View>
+                        <Text>Video </Text>
+                      </View>
+                      // <Video
+                      //   source={{uri: item.node.image.uri}}
+                      //   style={styles.image}
+                      //   resizeMode="contain"
+                      //   paused={true}
+
+                      // />
                     )}
                   </View>
                 )}
