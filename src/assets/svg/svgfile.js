@@ -19,8 +19,20 @@ import Add from '../svg/Add.svg';
 import Message from '../svg/Messenger.svg';
 import Search from '../svg/Search.svg';
 import Cameraicon from '../svg/Camera.svg';
+import Cameras from '../svg/Cameras.svg';
+import Mention from '../svg/Mention.svg';
+import Tagname from '../svg/Tagname.svg';
+import Images from '../svg/Images.svg';
+import Map from '../svg/Map.svg';
+import Loock from '../svg/Loock.svg';
+import Public from '../svg/Public.svg';
 export {
-  Add,
+  Add,Loock,Public,
+  Map,
+  Images,
+  Mention,
+  Tagname,
+  Cameras,
   Search,
   Cameraicon,
   SvgBack,

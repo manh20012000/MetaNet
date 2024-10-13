@@ -67,7 +67,7 @@ const MediaGrid = ({mediaList, onViewMore}) => {
   };
 
   return (
-    <View style={[styles.gridContainer, {backgroundColor: color.gray}]}>
+    <View style={[styles.gridContainer, {backgroundColor: color.gray2}]}>
       {mediaList.slice(0, displayLimit).map((media, index) => (
         <View key={index} style={[styles.gridItem]}>
           {renderImage(media, index)}

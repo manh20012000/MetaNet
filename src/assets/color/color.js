@@ -5,4 +5,5 @@ export const color = {
   backgroudcolor: '#f8dbd0',
   gray: '#777777',
   gray2: '#222222',
+  pink: 'pink',
 };

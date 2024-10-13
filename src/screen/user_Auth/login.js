@@ -239,7 +239,7 @@ const Login = ({navigation}) => {
                 borderRadius: 24,
                 borderWidth: 1,
                 borderColor: 'black',
-                paddingLeft: '2%',
+                paddingHorizontal: '2%',
               },
             ]}>
             <Passkey />

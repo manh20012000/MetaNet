@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   StyleSheet,
   Text,
@@ -12,9 +13,11 @@ import {
 import Video, {VideoRef} from 'react-native-video';
 import React, {useEffect, useReducer, useState} from 'react';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {Cameraicon} from '../../assets/svg/svgfile';
+import {Backsvg, Cameraicon} from '../../assets/svg/svgfile';
 import {launchCamera} from 'react-native-image-picker';
 import VideoManager from '@salihgun/react-native-video-processor';
+import EmojiSelector, {Categories} from 'react-native-emoji-selector';
+import {color} from '../../assets/color/color';
 const OverPickerView = ({onAddPress, navigation}) => {
   const [photos, setPhotos] = useState([]);
   const [imagePickture, setImagePickture] = useState([]);
@@ -126,7 +129,6 @@ const OverPickerView = ({onAddPress, navigation}) => {
       } else if (response.errorCode) {
         console.log('Camera error: ', response.errorMessage);
       } else {
-        console.log('Image URI: ', response.assets);
         const item = response.assets[0];
         //[{"fileName": "rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "fileSize": 1989291, "height": 3264, "originalPath": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "width": 2448}] */
         const imagepicker = {
@@ -141,36 +143,11 @@ const OverPickerView = ({onAddPress, navigation}) => {
 
         setImagePickture(response.assets);
         onAddPress();
-        navigation.navigate('OnpicktureUpload', [{imagepicker}]);
+        navigation.navigate('OnpicktureUpload', [imagepicker]);
       }
     });
   };
-  /**  const selectTed = item => {
-    setArrayselectImage(prevSelectedItems => {
-      const isSelected = prevSelectedItems.some(
-        selected => selected?.id === item.node.id,
-      );
-      if (isSelected) {
-        // If item is already selected, remove it
-        return prevSelectedItems.filter(
-          selected => selected?.id !== item.node.id,
-        );
-      } else {
-        // If item is not selected, add it
-        const imagepicker = {
-          id: item.node.id,
-          uri: item.node.image.uri,
-          width: item.node.image.width,
-          height: item.node.image.height,
-          name: item.node.image.filename,
-          type: item.node.image.type,
-          fileSize: item.node.image.fileSize,
-        };
-        return [...prevSelectedItems, imagepicker];
-      }
-    });
-  };
- */
+ 
   const selectTed = async item => {
     try {
       const uri = item.node.image.uri;
@@ -262,6 +239,11 @@ const OverPickerView = ({onAddPress, navigation}) => {
         <Text style={styles.selectText}>
           {ArraySelect.length > 0 ? 'Tiếp' : 'Select'}
         </Text>
+        <TouchableOpacity onPress={onAddPress}>
+          <Text style={{color: color.white, fontSize: 18, fontWeight: 'bold'}}>
+            Thoát
+          </Text>
+        </TouchableOpacity>
       </TouchableOpacity>
       <View style={styles.gridContainer}>
         <FlatList
@@ -336,16 +318,15 @@ const OverPickerView = ({onAddPress, navigation}) => {
                         resizeMode="contain"
                       />
                     ) : (
-                      <View>
-                        <Text>Video </Text>
-                      </View>
-                      // <Video
-                      //   source={{uri: item.node.image.uri}}
-                      //   style={styles.image}
-                      //   resizeMode="contain"
-                      //   paused={true}
-
-                      // />
+                      // <View>
+                      //   <Text>Video </Text>
+                      // </View>
+                      <Video
+                        source={{uri: item.node.image.uri}}
+                        style={styles.image}
+                        resizeMode="contain"
+                        paused={true}
+                      />
                     )}
                   </View>
                 )}
@@ -414,7 +395,9 @@ const styles = StyleSheet.create({
   selectButton: {
     backgroundColor: '#007aff',
     padding: 10,
-    borderRadius: 5,
+
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
   selectText: {
     color: '#fff',

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-native/no-inline-styles */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -29,6 +31,7 @@ import {Provider} from 'react-redux';
 import Navigation from './src/navigation/navigation.js';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {SocketProvider} from './src/util/socket.io.js';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 function App(): React.JSX.Element {
   return (
     <Provider store={store}>
@@ -41,7 +44,9 @@ function App(): React.JSX.Element {
           backgroundColor={'transparent'}
         />
         <SocketProvider>
-          <Navigation />
+          <GestureHandlerRootView style={{flex: 1}}>
+            <Navigation />
+          </GestureHandlerRootView>
         </SocketProvider>
       </SafeAreaProvider>
     </Provider>
