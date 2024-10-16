@@ -384,7 +384,7 @@ const OnpicktureUpload = ({route, navigation}) => {
   const fetchNearbyPlaces = async (latitude, longitude) => {
     try {
       const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=point_of_interest&key=AIzaSyB44Yutd3jtcMwS7f1Q8LbWPyORrAY-dA8`, // Thay YOUR_API_KEY bằng key thật của bạn
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=establishment&key=AIzaSyB44Yutd3jtcMwS7f1Q8LbWPyORrAY-dA8`, // Thay YOUR_API_KEY bằng key thật của bạn
       );
       const places = await response.data.results;
       setPlaces(places);
