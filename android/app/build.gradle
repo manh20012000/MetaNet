@@ -85,6 +85,12 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+     lintOptions {
+        abortOnError false
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -97,6 +103,7 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
+        
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.

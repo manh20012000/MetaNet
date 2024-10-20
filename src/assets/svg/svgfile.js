@@ -26,8 +26,9 @@ import Images from '../svg/Images.svg';
 import Map from '../svg/Map.svg';
 import Loock from '../svg/Loock.svg';
 import Public from '../svg/Public.svg';
+import Cancel from '../svg/Cancel.svg';
 export {
-  Add,Loock,Public,
+  Add, Loock, Public, Cancel,
   Map,
   Images,
   Mention,

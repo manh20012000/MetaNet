@@ -10,19 +10,19 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import Video, {VideoRef} from 'react-native-video';
-import React, {useEffect, useReducer, useState} from 'react';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {Backsvg, Cameraicon} from '../../assets/svg/svgfile';
-import {launchCamera} from 'react-native-image-picker';
+import Video, { VideoRef } from 'react-native-video';
+import React, { useEffect, useReducer, useState } from 'react';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import { Backsvg, Cameraicon } from '../../assets/svg/svgfile';
+import { launchCamera } from 'react-native-image-picker';
 import VideoManager from '@salihgun/react-native-video-processor';
-import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import {color} from '../../assets/color/color';
-const OverPickerView = ({onAddPress, navigation}) => {
+import EmojiSelector, { Categories } from 'react-native-emoji-selector';
+import { color } from '../../assets/color/color';
+const OverPickerView = ({ onAddPress, navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [imagePickture, setImagePickture] = useState([]);
   const [page, setPage] = useState(1); // State quản lý pagination (số lượng đã tải)
-  const {width, height} = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [isSelect, setIsSelect] = useState(false);
   const [ArraySelect, setArrayselectImage] = useState([]);
   async function hasAndroidPermission() {
@@ -58,9 +58,9 @@ const OverPickerView = ({onAddPress, navigation}) => {
         ]).then(
           statuses =>
             statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES] ===
-              PermissionsAndroid.RESULTS.GRANTED &&
+            PermissionsAndroid.RESULTS.GRANTED &&
             statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO] ===
-              PermissionsAndroid.RESULTS.GRANTED,
+            PermissionsAndroid.RESULTS.GRANTED,
         );
       } else {
         return PermissionsAndroid.request(
@@ -81,7 +81,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
     });
 
     if (Photos.edges && Photos.edges.length > 0) {
-      const data = [{node: {image: 'máy ảnh', id: '12345'}}, ...Photos.edges];
+      const data = [{ node: { image: 'máy ảnh', id: '12345' } }, ...Photos.edges];
 
       setPhotos(data);
       setPage(prevPage => prevPage + 1);
@@ -130,6 +130,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
         console.log('Camera error: ', response.errorMessage);
       } else {
         const item = response.assets[0];
+
         //[{"fileName": "rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "fileSize": 1989291, "height": 3264, "originalPath": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.metanet/cache/rn_image_picker_lib_temp_c005111d-c2a7-48e9-b297-31e98d7b19bd.jpg", "width": 2448}] */
         const imagepicker = {
           id: item.id,
@@ -147,7 +148,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
       }
     });
   };
- 
+
   const selectTed = async item => {
     try {
       const uri = item.node.image.uri;
@@ -240,7 +241,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
           {ArraySelect.length > 0 ? 'Tiếp' : 'Select'}
         </Text>
         <TouchableOpacity onPress={onAddPress}>
-          <Text style={{color: color.white, fontSize: 18, fontWeight: 'bold'}}>
+          <Text style={{ color: color.white, fontSize: 18, fontWeight: 'bold' }}>
             Thoát
           </Text>
         </TouchableOpacity>
@@ -249,7 +250,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
         <FlatList
           data={photos}
           keyExtractor={item => item.node.id}
-          renderItem={({item, index}) => {
+          renderItem={({ item, index }) => {
             // console.log(index, 'haahahindex');
             return (
               <>
@@ -313,7 +314,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
                     )}
                     {item.node.type === 'image/jpeg' ? (
                       <Image
-                        source={{uri: item.node.image.uri}}
+                        source={{ uri: item.node.image.uri }}
                         style={styles.image}
                         resizeMode="contain"
                       />
@@ -322,7 +323,7 @@ const OverPickerView = ({onAddPress, navigation}) => {
                       //   <Text>Video </Text>
                       // </View>
                       <Video
-                        source={{uri: item.node.image.uri}}
+                        source={{ uri: item.node.image.uri }}
                         style={styles.image}
                         resizeMode="contain"
                         paused={true}

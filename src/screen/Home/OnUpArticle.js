@@ -16,28 +16,28 @@ import {
   FlatList,
   ActivityIndicator,
   Pressable,
-  PermissionsAndroid,
+  PermissionsAndroid, TouchableWithoutFeedback
 } from 'react-native';
-import React, {useEffect, useState, useRef, useCallback, useMemo} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useSelector, useDispatch} from 'react-redux';
-import {Search, Message, Add} from '../../assets/svg/svgfile';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector, useDispatch } from 'react-redux';
+import { Search, Message, Add } from '../../assets/svg/svgfile';
 import path from '../../util/path_confige';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import * as Yup from 'yup';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import Spinner from 'react-native-loading-spinner-overlay';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
-import {FlashList} from '@shopify/flash-list';
-import {launchCamera} from 'react-native-image-picker';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { FlashList } from '@shopify/flash-list';
+import { launchCamera } from 'react-native-image-picker';
 import {
   Backsvg,
   Map,
   Images,
-  Mention,
+  Mention, Cancel,
   Tagname,
   Cameras,
   Loock,
@@ -45,22 +45,26 @@ import {
 } from '../../assets/svg/svgfile';
 import MediaGrid from '../Component/GridMedia';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
-import {MentionInput, Suggestion} from 'react-native-controlled-mentions';
+import { v4 as uuidv4 } from 'uuid';
+import { MentionInput, Suggestion } from 'react-native-controlled-mentions';
 import OverPickerView from './OverPickerView.js';
-import EmojiSelector, {Categories} from 'react-native-emoji-selector';
+import EmojiSelector, { Categories } from 'react-native-emoji-selector';
 import Geolocation from 'react-native-geolocation-service';
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import {useFocusEffect} from '@react-navigation/native';
-const OnpicktureUpload = ({route, navigation}) => {
-  const {width} = useWindowDimensions();
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { useFocusEffect } from '@react-navigation/native';
+import { checkAndRefreshToken } from '../../util/checkingToken.js';
+const OnpicktureUpload = ({ route, navigation }) => {
+  const { width } = useWindowDimensions();
   const color = useSelector(state => state.colorApp.value);
   const insets = useSafeAreaInsets({});
   const user = useSelector(state => state.auth.value);
+  const dispatch = useDispatch();
+  // console.log(route.params)
   const [value, setValue] = useState('');
   const [showFlatList, setShowFlatList] = useState(false);
   const [users, setUsers] = useState([]);
@@ -70,12 +74,14 @@ const OnpicktureUpload = ({route, navigation}) => {
   const [hidesWhenStopped, sethidesWhenStopped] = useState(false);
   const [showEmojiSelector, setShowEmojiSelector] = useState(false); // Để kiểm soát hiển thị EmojiSelector
   const [showModaLocal, setShowModaLocal] = useState(false);
+  const [loading, setLoading] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [selectedEmoji, setSelectedEmoji] = useState(null); // Lưu emoji đã chọn
   const [permission, setPermision] = useState('public');
   const [expanded, setExpanded] = useState(false);
+
   // eslint-disable-next-line no-unused-vars
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState(null);
   const animation = useRef(new Animated.Value(0)).current;
   const onPressAdd = () => {
     setIsModal(!isModal);
@@ -107,8 +113,10 @@ const OnpicktureUpload = ({route, navigation}) => {
   const fetchMentionUsers = async keyword => {
     sethidesWhenStopped(true);
     try {
-      const {data} = await axios.get(
-        `${path}/api/getMention/${keyword}?_id=${user._id}`,
+      const { data } = await axios.get(
+        `${path}/api/getMention`, {
+        params: { keyword: keyword, _id: user._id }
+      },
       );
 
       setUsers(data.data); // Cập nhật danh sách users từ API
@@ -134,7 +142,7 @@ const OnpicktureUpload = ({route, navigation}) => {
         const myId = uuidv4();
 
         const cleanedKeyword = keyword.replace('#', '');
-        results = [{id: myId, name: cleanedKeyword, isNew: true}]; // Tag mới
+        results = [{ id: myId, name: cleanedKeyword, isNew: true, }]; // Tag mới
       }
       setTags(results); // Cập nhật danh sách tags từ API
       setShowFlatList(true);
@@ -146,102 +154,119 @@ const OnpicktureUpload = ({route, navigation}) => {
   };
   const renderSuggestions =
     suggestions =>
-    ({keyword, onSuggestionPress}) => {
-      if (keyword == null) {
-        return null;
-      }
+      ({ keyword, onSuggestionPress }) => {
+        if (keyword == null) {
+          return null;
+        }
 
-      return (
-        <View
-          style={{
-            position: 'absolute',
-            top: insets.top + 100,
-            left: 0,
-            right: 0,
-            backgroundColor: 'red',
-            zIndex: 10,
-            width: '100%',
-          }}>
-          {hidesWhenStopped && (
-            <ActivityIndicator hidesWhenStopped={hidesWhenStopped} />
-          )}
-          <FlatList
-            data={suggestions}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignContent: 'center',
-                  justifyContent: 'space-between',
-                  marginRight: '5%',
-                  alignItems: 'center',
-                }}
-                onPress={async () => {
-                  onSuggestionPress(item);
-                  setShowFlatList(false);
-                  if (item.isNew === true) {
-                    console.log(item);
-                    try {
-                      // Gọi API để thêm hashtag vào database
-                      await axios.post(`${path}/api/addTagname`, {
-                        hagtag: {...item, id: user._id},
-                      });
-                    } catch (error) {
-                      console.error('Error adding hashtag:', error);
-                    } finally {
-                      setTags([]);
-                    }
-                  }
-                }}>
-                <Text style={[styles.suggestionItem, {color: color.white}]}>
-                  {item.name}
-                </Text>
-                {item.isNew && (
-                  <TouchableOpacity
-                    onPress={async () => {
+        return (
+          <View
+            style={{
+              position: 'absolute',
+              top: insets.top + 100,
+              left: 0,
+              right: 0,
+              backgroundColor: 'red',
+              zIndex: 10,
+              width: '100%',
+            }}>
+            {hidesWhenStopped && (
+              <ActivityIndicator hidesWhenStopped={hidesWhenStopped} />
+            )}
+            <FlatList
+              data={suggestions}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignContent: 'center',
+                    justifyContent: 'space-between',
+                    marginRight: '5%',
+                    alignItems: 'center',
+                  }}
+                  onPress={async () => {
+                    onSuggestionPress(item);
+                    setShowFlatList(false);
+                    if (item.isNew === true) {
+                      console.log(item);
                       try {
                         // Gọi API để thêm hashtag vào database
                         await axios.post(`${path}/api/addTagname`, {
-                          hagtag: {...item, id: user._id},
+                          hagtag: { ...item, id: user._id },
                         });
                       } catch (error) {
                         console.error('Error adding hashtag:', error);
                       } finally {
-                        onSuggestionPress(item);
                         setTags([]);
                       }
-                    }}
-                    style={{
-                      backgroundColor: color.blue,
-                      padding: 5,
-                      borderRadius: 5,
-                      justifyContent: 'space-around',
-                      flexDirection: 'row',
-                      alignContent: 'center',
-                      paddingRight: '60%',
-                    }}>
-                    {item?.avatar !== 'null' && (
-                      <Image
-                        source={{uri: item.avatar}}
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 100,
-                        }}
-                      />
-                    )}
-                    <Text style={{color: color.white}}>Add</Text>
-                  </TouchableOpacity>
-                )}
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      );
-    };
-  const renderMentionSuggestions = renderSuggestions(users);
+                    }
+                  }}>
+                  {item?.avatar && (
 
+                    <Image
+                      source={{ uri: item.avatar }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 100,
+                        backgroundColor: 'green'
+                      }}
+                    />
+                  )}
+                  <Text style={[styles.suggestionItem, { color: color.white }]}>
+                    {item.name}
+                  </Text>
+                  {item.isNew && (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        try {
+                          // Gọi API để thêm hashtag vào database
+                          await axios.post(`${path}/api/addTagname`, {
+                            hagtag: { ...item, id: user._id },
+                          });
+                        } catch (error) {
+                          console.error('Error adding hashtag:', error);
+                        } finally {
+                          onSuggestionPress(item);
+                          setTags([]);
+                        }
+                      }}
+                      style={{
+                        backgroundColor: 'pink',
+                        padding: 5,
+                        borderRadius: 5,
+                        justifyContent: 'space-around',
+                        flexDirection: 'row',
+                        alignContent: 'center',
+
+                        alignItems: 'center',
+                        alignSelf: 'flex-end',
+                        width: '10%',
+
+                      }}>
+                      {item?.avatar && (
+
+                        <Image
+                          source={{ uri: item.avatar }}
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 100,
+                            backgroundColor: 'green'
+                          }}
+                        />
+                      )}
+                      <Text style={{ color: color.white, backgroundColor: "green" }}>Add</Text>
+                    </TouchableOpacity>
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        );
+      };
+  const renderMentionSuggestions = renderSuggestions(users);
   const renderHashtagSuggestions = renderSuggestions(tags);
   const requestCameraPermission = async () => {
     try {
@@ -316,7 +341,7 @@ const OnpicktureUpload = ({route, navigation}) => {
   });
 
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['85%'], []);
+  const snapPoints = useMemo(() => ['90%'], []);
   useFocusEffect(
     useCallback(() => {
       //  handleList();
@@ -325,6 +350,7 @@ const OnpicktureUpload = ({route, navigation}) => {
   );
 
   const handlerbottonshet = () => {
+
     if (bottomSheetModalRef.current) {
       bottomSheetModalRef.current?.expand();
     }
@@ -348,7 +374,7 @@ const OnpicktureUpload = ({route, navigation}) => {
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Bạn đã cho phép truy cập vị trí');
+
         return true;
       } else {
         console.log('Bạn đã từ chối truy cập vị trí');
@@ -360,41 +386,55 @@ const OnpicktureUpload = ({route, navigation}) => {
     }
   };
 
-  // Hàm lấy vị trí hiện tại của người dùng
-  const getCurrentLocation = async () => {
-    const hasPermission = await requestLocationPermission();
-    if (!hasPermission) return;
-
-    await Geolocation.getCurrentPosition(
-      async position => {
-        const {latitude, longitude} = await position.coords;
-        console.log(`Vị trí hiện tại: ${latitude}, ${longitude}`);
-        // Sau khi có tọa độ, gọi API để lấy danh sách địa điểm gần đây
-        // fetchNearbyPlaces(latitude, longitude);
-        console.log(await fetchNearbyPlaces(latitude, longitude));
-      },
-      error => {
-        console.log('Error getting location: ', error);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
-
-  // Hàm gọi API Google Places để lấy danh sách địa điểm gần đây
-  const fetchNearbyPlaces = async (latitude, longitude) => {
-    try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=establishment&key=AIzaSyB44Yutd3jtcMwS7f1Q8LbWPyORrAY-dA8`, // Thay YOUR_API_KEY bằng key thật của bạn
-      );
-      const places = await response.data.results;
-      setPlaces(places);
-      console.log('Danh sách địa điểm gần đây: ', places);
-      return places;
-    } catch (error) {
-      console.error('Error fetching nearby places: ', error);
+  // Hàm lấy vị trí hiện tại của người dù
+  const postBaiviet = async () => {
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('user', user._id)
+    formData.append('post_content', value,)
+    formData.append('feel');
+    formData.append('permission', permission)
+    formData.append('location', places)
+    for (let i = 0; i < mediaList.length; i++) {
+      console.log(mediaList[i]);
+      formData.append("files", {
+        uri: mediaList[i].uri,
+        name: mediaList[i].type === 'image/jpeg' ? `image_${i}.jpeg` : `video${i}.mp4`,
+        type: mediaList[i].type,
+      });
     }
-  };
-
+    const isChecked = await checkAndRefreshToken(dispatch, user);
+    if (!isChecked) {
+      console.log("Token hết hạn, cần đăng nhập lại");
+      // Thực hiện điều hướng về trang đăng nhập nếu cần
+      return null;
+    } else {
+      try {
+        console.log("bắt đầu vào form data ");
+        const {
+          status,
+          data } = await axios.post(
+            `${path}/api/create-post`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                authorization: `Bearer ${isChecked.accessToken}`,
+              },
+            }
+          );
+        if (status === 200) {
+          // setLoading(false);
+          // setValue(null)
+          // setMediaList([])
+          navigation.navigate('Home')
+        }
+      } catch (err) {
+        setLoading(false);
+        console.log(err)
+      }
+    }
+  }
   return (
     <BottomSheetModalProvider>
       <View
@@ -403,10 +443,10 @@ const OnpicktureUpload = ({route, navigation}) => {
           {
             backgroundColor: color.gray2,
             paddingTop: insets.top,
-            paddingHorizontal: '2%',
+
           },
         ]}>
-        <View style={[styles.containerheader, {height: width / 10}]}>
+        <View style={[styles.containerheader, { height: width / 10 }]}>
           <TouchableOpacity
             style={[styles.backsvg]}
             onPress={() => {
@@ -416,7 +456,7 @@ const OnpicktureUpload = ({route, navigation}) => {
               backgroundColor="white"
               fill={'white'}
               stroke={'white'}
-              style={{backgroundColor: color.white}}
+              style={{ backgroundColor: color.white }}
             />
           </TouchableOpacity>
           <Text
@@ -432,15 +472,16 @@ const OnpicktureUpload = ({route, navigation}) => {
             Tạo bài viết
           </Text>
           <TouchableOpacity
-            disabled
+            onPress={postBaiviet}
+            // disabled
             style={[
               styles.bntPost,
-              {width: '15%', backgroundColor: color.black},
+              { width: '15%', backgroundColor: 'blue' },
             ]}>
             <Text
               style={{
                 fontFamily: 'Fredoka_Condensed-Bold.ttf',
-                fontSize: 15,
+                fontSize: 12,
                 fontWeight: 'bold',
               }}>
               POST
@@ -448,9 +489,9 @@ const OnpicktureUpload = ({route, navigation}) => {
           </TouchableOpacity>
         </View>
         <View
-          style={{backgroundColor: color.white, width: '100%', height: 2}}
+          style={{ backgroundColor: color.white, width: '100%', height: 2 }}
         />
-        <View style={[styles.viewUser, {height: width / 5}]}>
+        <View style={[styles.viewUser, { height: width / 5 }]}>
           <View
             style={{
               backgroundColor: color.gray,
@@ -460,18 +501,18 @@ const OnpicktureUpload = ({route, navigation}) => {
               borderWidth: 1,
             }}>
             <Image
-              source={{uri: user.avatar}}
-              style={{width: '100%', height: '100%', borderRadius: 100}}
+              source={{ uri: user.avatar }}
+              style={{ width: '100%', height: '100%', borderRadius: 100 }}
             />
           </View>
-          <Text style={{color: color.white, fontWeight: 'bold', fontSize: 24}}>
+          <Text style={{ color: color.white, fontWeight: 'bold', fontSize: 24 }}>
             {user.name}
           </Text>
         </View>
         <View
           style={[
             styles.wiewText,
-            {backgroundColor: color.gray2, height: width / 5},
+            { backgroundColor: color.gray2, height: width / 5 },
           ]}>
           <MentionInput
             value={value}
@@ -480,20 +521,20 @@ const OnpicktureUpload = ({route, navigation}) => {
               {
                 trigger: '#',
                 renderSuggestions: renderHashtagSuggestions,
-                textStyle: {fontWeight: 'bold', color: 'green'},
+                textStyle: { fontWeight: 'bold', color: 'green' },
               },
               {
                 trigger: '@',
                 renderSuggestions: renderMentionSuggestions,
-                textStyle: {fontWeight: 'bold', color: 'pink'},
+                textStyle: { fontWeight: 'bold', color: 'pink' },
               },
               {
                 pattern:
                   '/(https?://|www.)[-a-zA-Z0-9@:%._+~#=]{1,256}.(xn--)?[a-z0-9-]{2,20}\b([-a-zA-Z0-9@:%_+[],.~#?&/=]*[-a-zA-Z0-9@:%_+]~#?&/=])*/gi',
-                textStyle: {color: 'blue'},
+                textStyle: { color: 'blue' },
               },
             ]}
-            style={[styles.input, {color: color.white, width: '100%'}]}
+            style={[styles.input, { color: color.white, width: '100%' }]}
             placeholder="Mention ai đó bằng cách dùng @"
             placeholderTextColor={color.gray}
           />
@@ -509,20 +550,20 @@ const OnpicktureUpload = ({route, navigation}) => {
                   height: mediaList.length > 1 ? width + 50 : width + 70,
                 },
               ]}>
-              <MediaGrid mediaList={mediaList} onViewMore={() => {}} />
+              <MediaGrid mediaList={mediaList} onViewMore={() => { }} />
             </View>
             <Animated.View
               style={[
                 styles.menuContainer,
                 {
                   opacity: opacity,
-                  transform: [{translateY: translateY}, {scaleY: scaleY}],
+                  transform: [{ translateY: translateY }, { scaleY: scaleY }],
                 },
               ]}>
               <TouchableOpacity
                 style={[
                   styles.menuItem,
-                  {backgroundColor: permission === 'public' ? 'pink' : 'black'},
+                  { backgroundColor: permission === 'public' ? 'pink' : 'black' },
                 ]}
                 onPress={() => {
                   toggleMenu();
@@ -550,7 +591,7 @@ const OnpicktureUpload = ({route, navigation}) => {
             <View
               style={[
                 styles.status,
-                {backgroundColor: color.gray, height: 45},
+                { backgroundColor: color.gray, height: 45 },
               ]}>
               <TouchableOpacity onPress={onPressAdd} style={[styles.icon]}>
                 <Images />
@@ -563,13 +604,18 @@ const OnpicktureUpload = ({route, navigation}) => {
               <TouchableOpacity
                 style={[styles.icon]}
                 onPress={() => {
+                  requestLocationPermission()
                   setShowModaLocal(true);
-                  getCurrentLocation();
+
                 }}>
                 <Map />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handlerbottonshet}
+                onPress={() => {
+
+                  console.log('jajaja')
+                  handlerbottonshet()
+                }}
                 style={[styles.icon]}>
                 <Tagname />
               </TouchableOpacity>
@@ -599,7 +645,7 @@ const OnpicktureUpload = ({route, navigation}) => {
         </BottomSheetModal>
         <Modal
           style={{
-            flex: 0.8,
+            flex: 0.9,
             alignSelf: 'flex-end',
             justifyContent: 'flex-end',
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
@@ -608,51 +654,87 @@ const OnpicktureUpload = ({route, navigation}) => {
           animationType="slide"
           transparent
           onRequestClose={() => setShowModaLocal(false)}>
-          <View
-            style={{
-              flex: 0.95,
-
-              justifyContent: 'flex-end',
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            }}>
+          <TouchableWithoutFeedback onPress={() => setShowModaLocal(false)}>
             <View
               style={{
-                backgroundColor: color.white,
-                flex: 0.7,
-                borderRadius: 10,
+                flex: 0.95,
+
+                justifyContent: 'flex-end',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
               }}>
-              <TextInput
-                style={{color: color.black, padding: '2%', fontWeight: '700'}}
-                placeholderTextColor={color.gray2}
-                placeholder="nhập vị trí ">
-                <Text>dbsdsjfdbdbnjcvcvs</Text>
-              </TextInput>
-              <FlatList
-                data={places}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={(item, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={{
-                        backgroundColor: color.gray,
-                        padding: 10,
-                        marginHorizontal: 10,
-                        borderRadius: 10,
-                      }}>
-                      <Text style={{color: color.white, fontWeight: 'bold'}}>
-                        {item.name}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+              <View
+                style={{
+                  backgroundColor: color.gray2,
+                  flex: 1,
+                  borderRadius: 10,
+                }}>
+
+                <GooglePlacesAutocomplete
+                  placeholder="Tìm kiếm địa điểm"
+                  placeholderTextColor={color.black}
+                  minLength={2} // Tối thiểu 2 ký tự để bắt đầu gợi ý
+                  autoFocus={false}
+                  style={{
+                    // color: 'black', backgroundColor: color.gray2,
+                    textInputContainer: {
+                      backgroundColor: 'pink', // Màu nền của khung tìm kiếm
+                      borderRadius: 5,
+                      color: 'black'
+                    }, predefinedPlacesDescription: {
+                      color: '#1faadb', // Màu của chữ trong danh sách các địa điểm gợi ý
+                    }, loader: {
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      height: 20,
+                    },
+                  }}
+                  returnKeyType={'search'}
+                  listViewDisplayed="auto"
+                  fetchDetails={true}
+                  onPress={(data, details = null) => {
+
+                    console.log(data, 'Selected place details:', details);
+
+                    // Bạn có thể lấy toạ độ tại đây
+                    const latitude = details.geometry.location.lat;
+                    const longitude = details.geometry.location.lng;
+                    console.log('Tọa độ địa điểm:', latitude, longitude);
+                  }}
+                  query={{
+                    key: 'AIzaSyBw7H_BjrnS_dxSUxzCJ_rYbaN7s3G_hC8', // Thay bằng API key bạn đã tạo
+                    language: 'vi', // Ngôn ngữ
+                    types: 'geocode', // Loại địa điểm (geocode cho vị trí)
+                  }}
+                  styles={{
+                    textInputContainer: {
+                      width: '100%',
+                    },
+                    description: {
+                      fontWeight: 'bold',
+                    },
+                    predefinedPlacesDescription: {
+                      color: '#1faadb',
+                    },
+                  }}
+
+                  currentLocationLabel="Vị trí hiện tại"
+                  nearbyPlacesAPI="GooglePlacesSearch"
+                  debounce={200} // Chờ 200ms trước khi thực hiện tìm kiếm
+                />
+
+              </View>
             </View>
-          </View>
+
+          </TouchableWithoutFeedback>
         </Modal>
         <Modal visible={isModal} transparent={false}>
           <OverPickerView onAddPress={onPressAdd} navigation={navigation} />
         </Modal>
+        <Spinner
+          visible={loading}
+          textContent={'Đang tải...'}
+          textStyle={{ color: '#FFF' }}
+        />
       </View>
     </BottomSheetModalProvider>
   );
@@ -757,5 +839,5 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 16,
   },
-  contentContainer: {flex: 1, alignItems: 'center'},
+  contentContainer: { flex: 1, alignItems: 'center' },
 });

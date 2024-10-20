@@ -1,8 +1,8 @@
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {login} from '../Redex/Reducer/auth.slice';
-import path from './config';
+import { login } from '../Redux_Toolkit/Reducer/auth.slice.js';
+import path from './path_confige.js';
 export const checkAndRefreshToken = async (dispatch, user) => {
   // Lấy token từ AsyncStorage
 
@@ -11,7 +11,7 @@ export const checkAndRefreshToken = async (dispatch, user) => {
       // Nếu không có token, trả về false
       return false;
     }
-
+    console.log(user.refreshToken)
     const decoded = jwtDecode(user.accessToken);
 
     const isTokenExpired = decoded.exp * 1000 < Date.now(); // Kiểm tra token hết hạn
@@ -20,8 +20,8 @@ export const checkAndRefreshToken = async (dispatch, user) => {
       // Token hết hạn, cần làm mới token
       try {
         const response = await axios.post(
-          `${path}/user/refreshToken`,
-          {refreshToken: user.refreshToken},
+          `${path}/api/user/refreshToken`,
+          { refreshToken: user.refreshToken },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export const checkAndRefreshToken = async (dispatch, user) => {
           const accessTokenNew = data.data.accessToken;
           const refreshTokenNew = data.data.refreshToken;
 
-          await AsyncStorage.setItem('userToken', userDataString);
+          await AsyncStorage.setItem('user', userDataString);
           await AsyncStorage.setItem('accessToken', accessTokenNew);
           await AsyncStorage.setItem('refreshToken', refreshTokenNew);
 
